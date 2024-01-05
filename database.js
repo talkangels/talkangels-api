@@ -5,9 +5,9 @@ mongoose.set('strictQuery', true);
 const connectDatabase = () => {
     mongoose.connect(process.env.DB_URI, {
         useNewUrlParser: true,
-        useCreateIndex: true,
+        // useCreateIndex: true,
         useUnifiedTopology: true,
-        useFindAndModify: false
+        // useFindAndModify: false
     }).then(() => {
         console.log("Connection is Successful")
     }).catch((err) => console.log(`Somthing wont wrong`))
