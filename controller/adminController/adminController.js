@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
-const Admin = require("../../models/adminModel/adminModel");
-const Staff = require("../../models/staffModel/staffModel");
+const Admin = require("../../models/adminModel");
+const Staff = require("../../models/staffModel");
 const { generateToken } = require("../../utils/tokenGenerator");
 
 const registerAdmin = async (req, res, next) => {

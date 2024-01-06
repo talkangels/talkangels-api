@@ -13,11 +13,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Route imports
-const admin = require("./routes/adminRoutes/adminRoute");
-const user = require("./routes/userRoutes/userRoutes");
+const admin = require("./routes/adminRoute");
+const user = require("./routes/userRoutes");
+const staff = require("./routes/staffRoute");
 
 app.use("/api/v1", admin);
 app.use("/api/v1", user);
+app.use("/api/v1", staff);
 
 app.get('/', (req, res) => {
   res.send('Hey, this is my API running 🥳');

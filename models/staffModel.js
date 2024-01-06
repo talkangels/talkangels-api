@@ -34,6 +34,24 @@ const staffSchema = new mongoose.Schema({
         type: String,
         default: '0'
     },
+    active_status: {
+        type: Number,
+        required: true,
+        enum: [
+            "Online",
+            "Offline"
+        ],
+        default: "Offline"
+    },
+    call_status: {
+        type: Number,
+        required: true,
+        enum: [
+            "Available",
+            "Busy",
+        ],
+        default: "Available"
+    },
     status: {
         type: Number,
         required: true,

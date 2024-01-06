@@ -15,12 +15,16 @@ const userSchema = new mongoose.Schema({
             default: '0'
         }
     },
+    agora_call: {
+        chanal_name: {
+            type: String,
+        },
+        token: {
+            type: String,
+        },
+    },
     refer_and_earn: {
         type: String
-    },
-    whatsApp_token: {
-        type: String,
-        default: ''
     },
     image: {
         type: String,

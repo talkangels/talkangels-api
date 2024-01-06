@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
-const Staff = require("../../models/staffModel/staffModel");
+const Staff = require("../../models/staffModel");
 
 const addStaff = async (req, res, next) => {
     try {
