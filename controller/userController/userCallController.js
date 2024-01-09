@@ -7,9 +7,9 @@ const Staff = require("../../models/staffModel");
 
 const generateAgoraInfoForUser = async (req, res, next) => {
     try {
-        const { staffId } = req.params; // Assuming you pass the staffId in the request parameters
+        const { angelId } = req.params; // Assuming you pass the angelId in the request parameters
 
-        const staff = await Staff.findById(staffId);
+        const staff = await Staff.findById(angelId);
 
         if (!staff) {
             return next(new ErrorHandler("Angel not found", StatusCodes.NOT_FOUND));
@@ -83,8 +83,6 @@ const updateCallStatus = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
 };
-
-
 
 module.exports = {
     generateAgoraInfoForUser,

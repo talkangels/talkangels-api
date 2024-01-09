@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const User = require("../../models/userModel");
 const { generateToken } = require("../../utils/tokenGenerator");
+const Staff = require("../../models/staffModel");
 
 const logInUser = async (req, res, next) => {
     try {
@@ -52,6 +53,51 @@ const logInUser = async (req, res, next) => {
     }
 }
 
+const getAllAngels = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page_no) || 1;
+        const perPage = parseInt(req.query.items_per_page) || 10;
+
+        const { search_text } = req.query;
+        const query = {
+            ... (search_text ? {
+                $or: [
+                    { name: { $regex: search_text, $options: 'i' } },
+                    { user_name: { $regex: search_text, $options: 'i' } }
+                ]
+            } : {}),
+            status: 1, 
+        };
+
+        const skip = (page - 1) * perPage;
+        const staffs = await Staff.find(query)
+            .skip(skip)
+            .limit(perPage);
+        const totalStaffs = await Staff.countDocuments(query);
+        const allStaffs = await Staff.countDocuments();
+
+        const totalPages = Math.ceil(totalStaffs / perPage);
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            data: staffs,
+            pagination: {
+                total_items: allStaffs,
+                total_pages: totalPages,
+                current_page_item: staffs.length,
+                page_no: parseInt(page),
+                items_per_page: parseInt(perPage),
+            },
+        });
+
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
+
 module.exports = {
-    logInUser
+    logInUser,
+    getAllAngels
 };

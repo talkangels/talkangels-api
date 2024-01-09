@@ -2,6 +2,7 @@ const express = require("express")
 const { registerAdmin, loginAdmin } = require("../controller/adminController/adminController")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff } = require("../controller/adminController/adminStaffController")
+const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
 const router = express.Router()
 
 router
@@ -32,5 +33,26 @@ router
 router
     .route("/admin/delete-staff/:id")
     .delete(authenticateUser, authorizePermission("admin"), deleteStaff)
+
+// recharges admin routes...
+router
+    .route("/admin/add-recharge")
+    .post(authenticateUser, authorizePermission("admin"), addRecharges)
+
+router
+    .route("/admin/all-recharge")
+    .get(authenticateUser, authorizePermission("admin"), getAllRecharges)
+
+router
+    .route("/admin/one-recharge/:id")
+    .get(authenticateUser, authorizePermission("admin"), getOneRecharges)
+
+router
+    .route("/admin/update-recharge/:id")
+    .put(authenticateUser, authorizePermission("admin"), updateRecharge)
+
+router
+    .route("/admin/delete-recharge/:id")
+    .delete(authenticateUser, authorizePermission("admin"), deleteRecharge)
 
 module.exports = router

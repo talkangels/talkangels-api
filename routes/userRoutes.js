@@ -1,8 +1,7 @@
 const express = require("express")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 
-const { logInUser } = require("../controller/userController/userController")
-const { getAllStaff } = require("../controller/adminController/adminStaffController")
+const { logInUser, getAllAngels } = require("../controller/userController/userController")
 const { generateAgoraInfoForUser, updateCallStatus } = require("../controller/userController/userCallController")
 const router = express.Router()
 
@@ -12,10 +11,10 @@ router
 
 router
     .route("/user/all-angels")
-    .get(authenticateUser, authorizePermission("user"), getAllStaff)
+    .get(authenticateUser, authorizePermission("user"), getAllAngels)
 
 router
-    .route("/user/call/:staffId")
+    .route("/user/call/:angelId")
     .get(authenticateUser, authorizePermission("user"), generateAgoraInfoForUser)
 
 router

@@ -66,6 +66,27 @@ const staffSchema = new mongoose.Schema({
         type: String,
         default: 'staff'
     },
+    Listing_hours: {
+        type: String,
+        default: '0'
+    },
+    reviews: [
+        {
+            user: {
+                type: mongoose.Schema.ObjectId,
+                ref: "User",
+                required: true,
+            },
+            rating: {
+                type: Number,
+                required: true,
+            },
+            comment: {
+                type: String,
+                required: true,
+            },
+        },
+    ],
     fcmToken: String,
     updated_at: {
         type: Date,
