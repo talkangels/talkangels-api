@@ -3,6 +3,7 @@ const { authenticateUser, authorizePermission } = require("../middleware/auth")
 
 const { logInUser, getAllAngels } = require("../controller/userController/userController")
 const { generateAgoraInfoForUser, updateCallStatus } = require("../controller/userController/userCallController")
+const { getAllRecharges, addBallance } = require("../controller/userController/paymantController")
 const router = express.Router()
 
 router
@@ -14,11 +15,19 @@ router
     .get(authenticateUser, authorizePermission("user"), getAllAngels)
 
 router
-    .route("/user/call/:angelId")
-    .get(authenticateUser, authorizePermission("user"), generateAgoraInfoForUser)
+    .route("/user/call")
+    .post(authenticateUser, authorizePermission("user"), generateAgoraInfoForUser)
 
 router
     .route("/user/update-call-status/:staffId")
     .put(authenticateUser, authorizePermission("user"), updateCallStatus)
+
+router
+    .route("/user/all-recharge")
+    .get(authenticateUser, authorizePermission("user"), getAllRecharges)
+
+router
+    .route("/user/add-ballence")
+    .post(authenticateUser, authorizePermission("user"), addBallance)
 
 module.exports = router

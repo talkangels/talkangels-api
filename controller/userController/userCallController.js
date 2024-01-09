@@ -1,3 +1,4 @@
+const admin = require('firebase-admin');
 const ErrorHandler = require('../../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const User = require("../../models/userModel");
@@ -5,23 +6,58 @@ const { generateAgoraInfo } = require('../../utils/agoraService');
 const serviceAccount = require('../../serviceAccountKey.json');
 const Staff = require("../../models/staffModel");
 
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
+
 const generateAgoraInfoForUser = async (req, res, next) => {
     try {
-        const { angelId } = req.params; // Assuming you pass the angelId in the request parameters
+        const { angel_id, user_id } = req.body;
+        if (!angel_id || !user_id) {
+            return next(new ErrorHandler("AngelId and UserId are required for Call", StatusCodes.BAD_REQUEST));
+        }
 
-        const staff = await Staff.findById(angelId);
+        const staff = await Staff.findById(angel_id);
+        const user = await User.findById(user_id);
 
         if (!staff) {
             return next(new ErrorHandler("Angel not found", StatusCodes.NOT_FOUND));
         }
 
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
         const channelName = generateUniqueChannelName(staff.name, staff.mobile_number);
         const token = generateAgoraInfo(channelName);
+
+        if (staff.fcmToken) {
+            const userData = {
+                _id: user._id.toString(),
+                name: user.name,
+                mobile_number: user.mobile_number.toString(),
+                image: user.image,
+                channelName: channelName,
+                agora_token: token.agora_token,
+                agora_app_id: token.app_id,
+            };
+
+            const message = {
+                token: staff.fcmToken,
+                notification: {
+                    title: "helloo ",
+                    body: "hello",
+                },
+                data: userData
+            };
+            const response = await admin.messaging().send(message);
+        }
+
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
             success: true,
-            message: `Agora info generated successfully for user`,
+            message: `Call generated successfully`,
             data: {
                 angel_name: staff.name,
                 agoraInfo: { channelName, token },

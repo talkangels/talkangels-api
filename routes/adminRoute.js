@@ -1,5 +1,5 @@
 const express = require("express")
-const { registerAdmin, loginAdmin } = require("../controller/adminController/adminController")
+const { registerAdmin, loginAdmin, getAllUser } = require("../controller/adminController/adminController")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff } = require("../controller/adminController/adminStaffController")
 const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
@@ -12,6 +12,10 @@ router
 router
     .route("/auth/admin/login")
     .post(loginAdmin)
+
+router
+    .route("/admin/all-user")
+    .get(authenticateUser, authorizePermission("admin"), getAllUser)
 
 // staff admin routes...
 router

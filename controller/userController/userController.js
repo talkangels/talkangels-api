@@ -3,6 +3,8 @@ const ErrorHandler = require("../../middleware/errorHandler");
 const User = require("../../models/userModel");
 const { generateToken } = require("../../utils/tokenGenerator");
 const Staff = require("../../models/staffModel");
+const Recharges = require("../../models/rechargeModel");
+
 
 const logInUser = async (req, res, next) => {
     try {
@@ -66,7 +68,7 @@ const getAllAngels = async (req, res, next) => {
                     { user_name: { $regex: search_text, $options: 'i' } }
                 ]
             } : {}),
-            status: 1, 
+            status: 1,
         };
 
         const skip = (page - 1) * perPage;
@@ -96,8 +98,7 @@ const getAllAngels = async (req, res, next) => {
     }
 };
 
-
 module.exports = {
     logInUser,
-    getAllAngels
+    getAllAngels,
 };

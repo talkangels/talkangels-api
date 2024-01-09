@@ -7,21 +7,36 @@ const userSchema = new mongoose.Schema({
     },
     mobile_number: {
         type: Number,
-        required: true
+        unique: true,
+        required: true,
+        validate: {
+            validator: function (value) {
+                return /^\d{10}$/.test(value);
+            },
+            message: props => `${props.value} is not a valid 10-digit mobile number!`
+        },
     },
     talk_angel_wallet: {
-        Ballance: {
-            type: String,
-            default: '0'
-        }
-    },
-    agora_call: {
-        chanal_name: {
-            type: String,
+        total_ballance: {
+            type: Number,
+            default: 0
         },
-        token: {
-            type: String,
-        },
+        transections: [
+            {
+                amount: {
+                    type: Number,
+                    required: true,
+                },
+                type: {
+                    type: String,
+                    default: '0'
+                },
+                curent_bellance: {
+                    type: Number,
+                    required: true,
+                },
+            }
+        ]
     },
     refer_and_earn: {
         type: String
