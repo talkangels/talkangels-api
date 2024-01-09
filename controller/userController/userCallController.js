@@ -45,7 +45,11 @@ const updateCallStatus = async (req, res, next) => {
         const staff = await Staff.findById(staffId);
 
         if (!staff) {
-            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+            return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (staff.active_status === "Offline") {
+            return next(new ErrorHandler("Please do not update the status; Angel is offline.", StatusCodes.BAD_REQUEST));
         }
 
         if (!["Available", "Busy"].includes(call_status)) {

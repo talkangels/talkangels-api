@@ -16,9 +16,10 @@ const logInStaff = async (req, res, next) => {
         if (staff) {
             if (fcmToken) {
                 staff.fcmToken = fcmToken;
-                await Staff.save();
+                staff.active_status = 'Online'
+                await staff.save();
             }
-            const token = generateToken(user);
+            const token = generateToken(staff);
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 success: true,
