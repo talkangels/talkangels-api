@@ -3,8 +3,10 @@ const { RtcTokenBuilder, RtmTokenBuilder, RtcRole, RtmRole } = require('agora-to
 
 function generateAgoraInfo(channelName) {
 
-  const appId = process.env.APP_ID;
-  const appCertificate = process.env.APP_CERTIFICATE;
+  // const appId = process.env.APP_ID;
+  // const appCertificate = process.env.APP_CERTIFICATE;
+  const appId = "0bffcb3b97ff4f58bf0d7ca8d92b6b5d";
+  const appCertificate = "0e407391933141399e33d1c7e37013f0";
   const uid = '';
   const role = RtcRole.PUBLISHER;
 
