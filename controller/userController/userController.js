@@ -2,7 +2,6 @@ const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const User = require("../../models/userModel");
 const { generateToken } = require("../../utils/tokenGenerator");
-const { generateAgoraInfo } = require("../../utils/agoraService");
 
 const logInUser = async (req, res, next) => {
     try {
@@ -52,43 +51,6 @@ const logInUser = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
 }
-
-const generateAgoraInfoForUser = async (req, res, next) => {
-    try {
-        const { userId } = req.params; // Assuming you pass the userId in the request parameters
-
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
-        }
-
-        const { channelName, token } = generateAgoraInfo(user);
-
-        user.agora_call = {
-            channelName,
-            token,
-        };
-
-        await user.save();
-
-        const userToken = generateToken(user);
-        return res.status(StatusCodes.OK).json({
-            status: StatusCodes.OK,
-            success: true,
-            message: `Agora info generated successfully for user`,
-            data: {
-                name: user.name,
-                mobile_number: user.mobile_number
-            },
-            Token: userToken,
-            agoraInfo: { channelName, token },
-        });
-    } catch (error) {
-        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
-    }
-}
-
 
 module.exports = {
     logInUser

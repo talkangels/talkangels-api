@@ -2,36 +2,30 @@ const ErrorHandler = require('../../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const User = require("../../models/userModel");
 const { generateAgoraInfo } = require('../../utils/agoraService');
+const serviceAccount = require('../../serviceAccountKey.json');
+const Staff = require("../../models/staffModel");
 
 const generateAgoraInfoForUser = async (req, res, next) => {
     try {
-        const { userId } = req.params; // Assuming you pass the userId in the request parameters
+        const { staffId } = req.params; // Assuming you pass the staffId in the request parameters
 
-        const user = await User.findById(userId);
+        const staff = await Staff.findById(staffId);
 
-        if (!user) {
-            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        if (!staff) {
+            return next(new ErrorHandler("Angel not found", StatusCodes.NOT_FOUND));
         }
 
-        const channelName = generateUniqueChannelName(user.name, user.mobile_number);
+        const channelName = generateUniqueChannelName(staff.name, staff.mobile_number);
         const token = generateAgoraInfo(channelName);
-
-        user.agora_call = {
-            channelName,
-            token,
-        };
-
-        await user.save();
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
             success: true,
             message: `Agora info generated successfully for user`,
             data: {
-                name: user.name,
-                mobile_number: user.mobile_number
+                angel_name: staff.name,
+                agoraInfo: { channelName, token },
             },
-            agoraInfo: { channelName, token, appId: '0bffcb3b97ff4f58bf0d7ca8d92b6b5d' },
         });
 
     } catch (error) {
@@ -40,11 +34,55 @@ const generateAgoraInfoForUser = async (req, res, next) => {
 }
 
 function generateUniqueChannelName(name, mobileNumber) {
-    // Logic to generate a unique channel name based on user-specific details
     return `${name}_${Date.now()}`;
 }
 
+const updateCallStatus = async (req, res, next) => {
+    try {
+        const { staffId } = req.params;
+        const { call_status } = req.body;
+
+        const staff = await Staff.findById(staffId);
+
+        if (!staff) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (!["Available", "Busy"].includes(call_status)) {
+            return next(new ErrorHandler("Invalid call_status", StatusCodes.BAD_REQUEST));
+        }
+
+        if (staff.call_status === "Available" && call_status === "Busy") {
+            staff.call_status = call_status;
+        } else if (staff.call_status === "Busy" && call_status === "Available") {
+            staff.call_status = call_status;
+        } else {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                status: StatusCodes.BAD_REQUEST,
+                success: false,
+                message: "Invalid call status transition",
+            });
+        }
+        await staff.save();
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: `Call status updated successfully for staff`,
+            data: {
+                name: staff.name,
+                mobile_number: staff.mobile_number,
+                callStatus: staff.call_status,
+            },
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
+
 
 module.exports = {
-    generateAgoraInfoForUser
+    generateAgoraInfoForUser,
+    updateCallStatus
 };

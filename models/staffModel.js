@@ -35,8 +35,7 @@ const staffSchema = new mongoose.Schema({
         default: '0'
     },
     active_status: {
-        type: Number,
-        required: true,
+        type: String,
         enum: [
             "Online",
             "Offline"
@@ -44,8 +43,7 @@ const staffSchema = new mongoose.Schema({
         default: "Offline"
     },
     call_status: {
-        type: Number,
-        required: true,
+        type: String,
         enum: [
             "Available",
             "Busy",
@@ -54,7 +52,6 @@ const staffSchema = new mongoose.Schema({
     },
     status: {
         type: Number,
-        required: true,
         enum: [
             0,
             1,
@@ -63,7 +60,6 @@ const staffSchema = new mongoose.Schema({
     },
     charges: {
         type: String,
-        required: true,
         default: '0'
     },
     role: {
@@ -71,6 +67,10 @@ const staffSchema = new mongoose.Schema({
         default: 'staff'
     },
     fcmToken: String,
+    updated_at: {
+        type: Date,
+        default: Date.now
+    },
 });
 
 module.exports = mongoose.model('Staff', staffSchema);
