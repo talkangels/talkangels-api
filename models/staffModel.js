@@ -71,16 +71,65 @@ const staffSchema = new mongoose.Schema({
         default: 0
     },
     charges: {
-        type: String,
-        default: '0'
+        type: Number,
+        default: 10
     },
     role: {
         type: String,
         default: 'staff'
     },
-    Listing_hours: {
-        type: String,
-        default: '0'
+    listing: {
+        total_minutes: {
+            type: String,
+            default: '0'
+        },
+        call_history: [
+            {
+                user: {
+                    type: mongoose.Schema.ObjectId,
+                    ref: "User",
+                    required: true,
+                },
+                history: [
+                    {
+                        date: {
+                            type: Date,
+                            required: true,
+                        },
+                        call_type: {
+                            type: String,
+                            required: true,
+                        },
+                        minutes: {
+                            type: String,
+                            required: true,
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    earnings: {
+        current_earnings: {
+            type: Number,
+            default: 0
+        },
+        total_money_withdraws: {
+            type: Number,
+            default: 0
+        },
+        total_pending_money: {
+            type: Number,
+            default: 0
+        },
+        sent_withdraw_request: {
+            type: Number,
+            default: 0
+        }
+    },
+    total_rating: {
+        type: Number,
+        default: 0
     },
     reviews: [
         {

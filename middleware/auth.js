@@ -5,7 +5,7 @@ const authenticateUser = async (req, res, next) => {
   const authorizationHeader = req.headers.authorization;
 
   if (!authorizationHeader) {
-    return next(new ErrorHandler("Please log in to access this resource", 401));
+    return next(new ErrorHandler("Please logIn to access this resource", 401));
   }
 
   const bearer = authorizationHeader.split(" ");
@@ -13,8 +13,8 @@ const authenticateUser = async (req, res, next) => {
   const token = req.headers.authorization.split(' ')[0];
 
   try {
-    const { username, userId, role } = verifyToken(token);
-    req.user = { username, userId, role };
+    const { name, mobile_number, role } = verifyToken(token);
+    req.user = { name, mobile_number, role };
     next();
   } catch (error) {
     return next(new ErrorHandler("Invalid token, Please Log-Out and Log-In again", 401));

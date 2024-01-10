@@ -28,7 +28,11 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
         }
 
-        const channelName = generateUniqueChannelName(staff.name, staff.mobile_number);
+        if (staff.call_status === 'Busy') {
+            return next(new ErrorHandler("Angel is now busy. Please try again later.", StatusCodes.NOT_FOUND));
+        }
+
+        const channelName = generateUniqueChannelName(staff.name, user.name);
         const token = generateAgoraInfo(channelName);
 
         if (staff.fcmToken) {
@@ -68,8 +72,8 @@ const generateAgoraInfoForUser = async (req, res, next) => {
     }
 }
 
-function generateUniqueChannelName(name, mobileNumber) {
-    return `${name}_${Date.now()}`;
+function generateUniqueChannelName(staff_name, user_name) {
+    return `${staff_name}_${Date.now()}_${user_name}`;
 }
 
 const updateCallStatus = async (req, res, next) => {
@@ -84,7 +88,7 @@ const updateCallStatus = async (req, res, next) => {
         }
 
         if (staff.active_status === "Offline") {
-            return next(new ErrorHandler("Please do not update the status; Angel is offline.", StatusCodes.BAD_REQUEST));
+            return next(new ErrorHandler("Please do not update the call status. Angel is offline.", StatusCodes.BAD_REQUEST));
         }
 
         if (!["Available", "Busy"].includes(call_status)) {
