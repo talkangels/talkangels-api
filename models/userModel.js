@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid 10-digit mobile number!`
         },
     },
+    country_code: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     talk_angel_wallet: {
         total_ballance: {
             type: Number,

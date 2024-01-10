@@ -36,5 +36,5 @@ const logInStaff = async (req, res, next) => {
 }
 
 module.exports = {
-    logInStaff  
+    logInStaff
 };

@@ -45,14 +45,13 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             const message = {
                 token: staff.fcmToken,
                 notification: {
-                    title: "helloo ",
+                    title: "incoming call...",
                     body: "hello",
                 },
                 data: userData
             };
             const response = await admin.messaging().send(message);
         }
-
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,

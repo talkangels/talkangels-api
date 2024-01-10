@@ -11,7 +11,19 @@ const staffSchema = new mongoose.Schema({
     },
     mobile_number: {
         type: Number,
-        required: true
+        unique: true,
+        required: true,
+        validate: {
+            validator: function (value) {
+                return /^\d{10}$/.test(value);
+            },
+            message: props => `${props.value} is not a valid 10-digit mobile number!`
+        },
+    },
+    country_code: {
+        type: Number,
+        required: true,
+        default: 0
     },
     gender: {
         type: String,

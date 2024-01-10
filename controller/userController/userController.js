@@ -8,7 +8,7 @@ const Recharges = require("../../models/rechargeModel");
 
 const logInUser = async (req, res, next) => {
     try {
-        const { name, mobile_number, fcmToken } = req.body;
+        const { name, mobile_number, country_code, fcmToken } = req.body;
 
         if (!name || !mobile_number) {
             return next(new ErrorHandler("All fields are required for LogIn", StatusCodes.BAD_REQUEST));
@@ -19,7 +19,8 @@ const logInUser = async (req, res, next) => {
         if (!user) {
             user = new User({
                 mobile_number,
-                name
+                name,
+                country_code
             });
             await user.save();
 
