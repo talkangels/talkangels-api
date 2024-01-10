@@ -5,16 +5,15 @@ const User = require("../../models/userModel");
 
 const saveCallHistory = async (req, res, next) => {
     try {
-        const { staffId } = req.params;
-        const { user_id, call_type, minutes } = req.body;
+        const { staff_id, user_id, call_type, minutes } = req.body;
 
         if (!user_id || !call_type || !minutes) {
             return next(new ErrorHandler("User ID, call type, and minutes are required", StatusCodes.BAD_REQUEST));
         }
 
-        const staff = await Staff.findById(staffId);
+        const staff = await Staff.findById(staff_id);
         const user = await User.findById(user_id);
-        
+
         if (!staff) {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
@@ -52,7 +51,7 @@ const saveCallHistory = async (req, res, next) => {
         const total_minutes = calculateTotalMinutes(staff.listing.call_history)
         staff.listing.total_minutes = formatMinutes(total_minutes);
 
-        const chargePerMinute = staff.charges || 10; 
+        const chargePerMinute = staff.charges || 10;
         const earnings = calculateEarnings(staff.listing.total_minutes, chargePerMinute);
 
         staff.earnings.current_earnings = earnings;
@@ -88,6 +87,10 @@ function calculateTotalMinutes(callHistory) {
     }, 0);
 }
 
+const calculateEarnings = (totalMinutes, chargePerMinute) => {
+    const totalMinutesNumeric = parseInt(totalMinutes.split('hr:')[0]) * 60 + parseInt(totalMinutes.split('hr:')[1].replace('min', ''));
+    return totalMinutesNumeric * chargePerMinute;
+};
 
 const getCallHistory = async (req, res, next) => {
     try {
@@ -126,11 +129,6 @@ const getCallHistory = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-};
-
-const calculateEarnings = (totalMinutes, chargePerMinute) => {
-    const totalMinutesNumeric = parseInt(totalMinutes.split('hr:')[0]) * 60 + parseInt(totalMinutes.split('hr:')[1].replace('min', ''));
-    return totalMinutesNumeric * chargePerMinute;
 };
 
 module.exports = {

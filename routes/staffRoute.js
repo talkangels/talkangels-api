@@ -13,7 +13,7 @@ router
     .put(authenticateUser, authorizePermission("staff"), updateActiveStatus)
 
 router
-    .route("/staff/save-call-history/:staffId")
+    .route("/save-call-history")
     .post(saveCallHistory)
 
 router
