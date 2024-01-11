@@ -30,7 +30,7 @@ const registerAdmin = async (req, res, next) => {
 
 const loginAdmin = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, fcmToken } = req.body;
 
         if (!email || !password) {
             return next(new ErrorHandler("All fields are required for login", StatusCodes.BAD_REQUEST));
@@ -45,7 +45,10 @@ const loginAdmin = async (req, res, next) => {
         if (password === user.password) {
             const userWithoutPassword = { ...user.toObject() };
             delete userWithoutPassword.password;
-
+            if (fcmToken) {
+                user.fcmToken = fcmToken;
+                await user.save();
+            }
             const token = generateToken(user);
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
@@ -64,10 +67,8 @@ const loginAdmin = async (req, res, next) => {
 
 const getAllUser = async (req, res, next) => {
     try {
-
         const page = parseInt(req.query.page_no) || 1;
         const perPage = parseInt(req.query.items_per_page) || 10;
-
         const { search_text } = req.query;
 
         const query = search_text ? { $or: [{ name: { $regex: search_text, $options: 'i' } }, { mobile_number: { $regex: search_text, $options: 'i' } }] } : {};

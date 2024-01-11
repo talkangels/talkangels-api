@@ -1,8 +1,9 @@
 const express = require("express")
-const { registerAdmin, loginAdmin, getAllUser } = require("../controller/adminController/adminController")
+const { registerAdmin, loginAdmin, getAllUser} = require("../controller/adminController/adminController")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff } = require("../controller/adminController/adminStaffController")
 const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
+const { getAllWithdrawRequests, updateWithdrawRequestStatus } = require("../controller/adminController/adminRequstController")
 const router = express.Router()
 
 router
@@ -58,5 +59,15 @@ router
 router
     .route("/admin/delete-recharge/:id")
     .delete(authenticateUser, authorizePermission("admin"), deleteRecharge)
+
+// withdraw request admin routes...
+
+router
+    .route("/admin/all-withdraw-request")
+    .get(authenticateUser, authorizePermission("admin"), getAllWithdrawRequests)
+
+router
+    .route("/admin/update-withdraw-request")
+    .put(authenticateUser, authorizePermission("admin"), updateWithdrawRequestStatus)
 
 module.exports = router

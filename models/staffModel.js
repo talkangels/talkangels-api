@@ -38,11 +38,11 @@ const staffSchema = new mongoose.Schema({
         type: String,
         default: '0'
     },
-    Language: {
+    language: {
         type: String,
         default: '0'
     },
-    Age: {
+    age: {
         type: String,
         default: '0'
     },

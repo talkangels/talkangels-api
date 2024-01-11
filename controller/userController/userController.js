@@ -79,10 +79,29 @@ const getAllAngels = async (req, res, next) => {
 
         const totalPages = Math.ceil(totalStaffs / perPage);
 
+
+        const staffData = staffs.map(staffs => ({
+            "_id": staffs._id,
+            "user_name": staffs.user_name,
+            "name": staffs.name,
+            "mobile_number": staffs.mobile_number,
+            "gender": staffs.gender,
+            "bio": staffs.bio,
+            "image": staffs.image,
+            "language": staffs.language,
+            "age": staffs.age,
+            "active_status": staffs.active_status,
+            "call_status": staffs.call_status,
+            "charges": staffs.charges,
+            "fcmToken": staffs.fcmToken,
+            "country_code": staffs.country_code,
+            "total_rating": staffs.total_rating
+        }))
+
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
             success: true,
-            data: staffs,
+            data: staffData,
             pagination: {
                 total_items: allStaffs,
                 total_pages: totalPages,
