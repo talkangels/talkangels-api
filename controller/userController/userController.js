@@ -6,6 +6,7 @@ const Staff = require("../../models/staffModel");
 
 const logInUser = async (req, res, next) => {
     try {
+
         const { name, mobile_number, country_code, fcmToken } = req.body;
 
         if (!name || !mobile_number) {
@@ -14,11 +15,17 @@ const logInUser = async (req, res, next) => {
 
         let user = await User.findOne({ mobile_number });
 
+        if (user.status === 0) {
+            return next(new ErrorHandler(`'${mobile_number}' Admin has blocked this number.`, StatusCodes.BAD_REQUEST));
+        }
+
         if (!user) {
+            const newReferralCode = generateRandomReferralCode();
             user = new User({
                 mobile_number,
                 name,
-                country_code
+                country_code,
+                refer_code: newReferralCode
             });
             await user.save();
 
@@ -26,7 +33,6 @@ const logInUser = async (req, res, next) => {
                 user.fcmToken = fcmToken;
                 await user.save();
             }
-
             const token = generateToken(user);
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
@@ -136,6 +142,21 @@ const getOneUser = async (req, res, next) => {
 
     }
 }
+
+const generateRandomReferralCode = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const codeLength = 8;
+    let referralCode = '';
+
+    for (let i = 0; i < codeLength; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        referralCode += characters.charAt(randomIndex);
+    }
+
+    return referralCode;
+};
+
+
 module.exports = {
     logInUser,
     getAllAngels,

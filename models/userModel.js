@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
             }
         ]
     },
-    refer_and_earn: {
+    refer_code: {
         type: String
     },
     image: {
@@ -65,7 +65,7 @@ const userSchema = new mongoose.Schema({
             0,
             1,
         ],
-        default: 0
+        default: 1
     },
     role: {
         type: String,

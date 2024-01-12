@@ -30,7 +30,7 @@ const addBallance = async (req, res, next) => {
             return next(new ErrorHandler("user_id and amount are required", StatusCodes.BAD_REQUEST));
         }
 
-        const user = await User.findOne({ user_id });
+        const user = await User.findById(user_id);
 
         if (!user) {
             return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
@@ -38,7 +38,6 @@ const addBallance = async (req, res, next) => {
 
         user.talk_angel_wallet.transections = user.talk_angel_wallet.transections || [];
         const currentTime = new Date();
-        user.talk_angel_wallet.total_ballance = (parseFloat(user.talk_angel_wallet.total_ballance) + parseFloat(amount)).toString();
         user.talk_angel_wallet.transections.push({
             amount: amount,
             type: 'credit',
@@ -46,6 +45,7 @@ const addBallance = async (req, res, next) => {
             payment_id: payment_id,
             date: currentTime
         });
+        user.talk_angel_wallet.total_ballance = (parseFloat(user.talk_angel_wallet.total_ballance) + parseFloat(amount)).toString();
 
         await user.save();
 
