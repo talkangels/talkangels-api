@@ -32,13 +32,20 @@ const userSchema = new mongoose.Schema({
                     type: Number,
                     required: true,
                 },
-                
+                payment_id: {
+                    type: String,
+                    required: true,
+                },
                 type: {
                     type: String,
                     default: '0'
                 },
                 curent_bellance: {
                     type: Number,
+                    required: true,
+                },
+                date: {
+                    type: Date,
                     required: true,
                 },
             }

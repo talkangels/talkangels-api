@@ -1,7 +1,7 @@
 const express = require("express")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 
-const { logInUser, getAllAngels } = require("../controller/userController/userController")
+const { logInUser, getAllAngels, getOneUser } = require("../controller/userController/userController")
 const { generateAgoraInfoForUser, updateCallStatus } = require("../controller/userController/userCallController")
 const { getAllRecharges, addBallance } = require("../controller/userController/paymantController")
 const router = express.Router()
@@ -13,6 +13,10 @@ router
 router
     .route("/user/all-angels")
     .get(authenticateUser, authorizePermission("user"), getAllAngels)
+
+router
+    .route("/user/detail/:id")
+    .get(authenticateUser, authorizePermission("user"), getOneUser)
 
 router
     .route("/user/call")

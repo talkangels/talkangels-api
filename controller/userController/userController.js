@@ -116,7 +116,28 @@ const getAllAngels = async (req, res, next) => {
     }
 };
 
+const getOneUser = async (req, res, next) => {
+    try {
+        const user_id = req.params.id;
+
+        const user = await User.findById(user_id);
+
+        if (!user) {
+            return next(new ErrorHandler(`user not found with id ${user_id}`, StatusCodes.NOT_FOUND));
+        }
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            data: user,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+
+    }
+}
 module.exports = {
     logInUser,
     getAllAngels,
+    getOneUser,
 };
