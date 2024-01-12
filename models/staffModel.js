@@ -138,14 +138,22 @@ const staffSchema = new mongoose.Schema({
                 ref: "User",
                 required: true,
             },
-            rating: {
-                type: Number,
-                required: true,
-            },
-            comment: {
-                type: String,
-                required: true,
-            },
+            user_reviews: [
+                {
+                    rating: {
+                        type: Number,
+                        required: true,
+                    },
+                    comment: {
+                        type: String,
+                    },
+                    date: {
+                        type: Date,
+                        default: new Date()
+                    },
+                }
+            ]
+
         },
     ],
     fcmToken: String,

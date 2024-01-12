@@ -1,9 +1,10 @@
 const express = require("express")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 
-const { logInUser, getAllAngels, getOneUser } = require("../controller/userController/userController")
+const { logInUser, getAllAngels, getOneUser, applyReferralCode } = require("../controller/userController/userController")
 const { generateAgoraInfoForUser, updateCallStatus } = require("../controller/userController/userCallController")
 const { getAllRecharges, addBallance } = require("../controller/userController/paymantController")
+const { addRating } = require("../controller/userController/ratingController")
 const router = express.Router()
 
 router
@@ -33,5 +34,13 @@ router
 router
     .route("/user/add-ballence")
     .post(authenticateUser, authorizePermission("user"), addBallance)
+
+router
+    .route("/user/apply-refer-code")
+    .post(authenticateUser, authorizePermission("user"), applyReferralCode)
+
+router
+    .route("/user/add-rating")
+    .post(authenticateUser, authorizePermission("user"), addRating)
 
 module.exports = router

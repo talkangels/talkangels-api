@@ -117,8 +117,6 @@ const updateStaff = async (req, res, next) => {
             charges,
         } = req.body;
 
-        const newAvatar = req.file;
-
         const updatedStaffData = {
             user_name,
             name,
@@ -152,7 +150,6 @@ const updateStaff = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
 };
-
 
 const deleteStaff = async (req, res, next) => {
     try {

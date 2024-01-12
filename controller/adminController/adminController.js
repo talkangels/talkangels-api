@@ -101,8 +101,41 @@ const getAllUser = async (req, res, next) => {
     }
 }
 
+const updateUserStatus = async (req, res, next) => {
+    try {
+        const user_id = req.params.id;
+
+        const {
+            status,
+        } = req.body;
+
+        const updatedUserData = {
+            status,
+        };
+
+        const updatedUser = await User.findByIdAndUpdate(
+            user_id,
+            { $set: updatedUserData },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return next(new ErrorHandler(`Staff not found with id ${user_id}`, StatusCodes.NOT_FOUND));
+        }
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: `User Status updated successfully`,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+}
+
 module.exports = {
     registerAdmin,
     loginAdmin,
     getAllUser,
+    updateUserStatus
 };

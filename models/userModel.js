@@ -34,7 +34,6 @@ const userSchema = new mongoose.Schema({
                 },
                 payment_id: {
                     type: String,
-                    required: true,
                 },
                 type: {
                     type: String,
@@ -53,6 +52,15 @@ const userSchema = new mongoose.Schema({
     },
     refer_code: {
         type: String
+    },
+    refer_code_status: {
+        type: Number,
+        required: true,
+        enum: [
+            0,
+            1,
+        ],
+        default: 0
     },
     image: {
         type: String,

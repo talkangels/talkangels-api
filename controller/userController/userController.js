@@ -15,10 +15,6 @@ const logInUser = async (req, res, next) => {
 
         let user = await User.findOne({ mobile_number });
 
-        if (user.status === 0) {
-            return next(new ErrorHandler(`'${mobile_number}' Admin has blocked this number.`, StatusCodes.BAD_REQUEST));
-        }
-
         if (!user) {
             const newReferralCode = generateRandomReferralCode();
             user = new User({
@@ -42,10 +38,15 @@ const logInUser = async (req, res, next) => {
                 Token: token,
             });
         } else {
+            if (user.status === 0) {
+                return next(new ErrorHandler(`'${mobile_number}' Admin has blocked this number.`, StatusCodes.BAD_REQUEST));
+            }
+
             if (fcmToken) {
                 user.fcmToken = fcmToken;
                 await user.save();
             }
+            user.refer_code_status = 1
             const token = generateToken(user);
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
@@ -156,9 +157,74 @@ const generateRandomReferralCode = () => {
     return referralCode;
 };
 
+const applyReferralCode = async (req, res, next) => {
+    try {
+        const { user_id, refer_code } = req.body;
+
+        if (!user_id || !refer_code) {
+            return next(new ErrorHandler("All fields are required for apply refer code.", StatusCodes.BAD_REQUEST));
+        }
+        let user = await User.findById(user_id);
+
+        if (!user) {
+            return next(new ErrorHandler(`user not found with id ${user_id}`, StatusCodes.NOT_FOUND));
+        }
+        if (user.refer_code_status === 1) {
+            return next(new ErrorHandler("User allready applyed refer code.", StatusCodes.BAD_REQUEST));
+        }
+        let referUser = await User.findOne({ refer_code });
+
+        if (!referUser) {
+            return next(new ErrorHandler(`Invalid Refer Code`, StatusCodes.BAD_REQUEST));
+        }
+        if (refer_code === user.refer_code) {
+            return next(new ErrorHandler(`Invalid Refer Code`, StatusCodes.BAD_REQUEST));
+        }
+
+        const currentTime = new Date();
+        const amount = 10
+
+        if (referUser) {
+            referUser.talk_angel_wallet.transections = referUser.talk_angel_wallet.transections || [];
+            referUser.talk_angel_wallet.transections.push({
+                amount: amount,
+                type: 'refer-code',
+                curent_bellance: referUser.talk_angel_wallet.total_ballance,
+                date: currentTime,
+            });
+            referUser.talk_angel_wallet.total_ballance = (parseFloat(referUser.talk_angel_wallet.total_ballance) + parseFloat(amount)).toString();
+        }
+
+        if (user) {
+            user.talk_angel_wallet.transections = user.talk_angel_wallet.transections || [];
+            user.talk_angel_wallet.transections.push({
+                amount: amount,
+                type: 'refer-code',
+                curent_bellance: user.talk_angel_wallet.total_ballance,
+                date: currentTime,
+            });
+            user.talk_angel_wallet.total_ballance = (parseFloat(user.talk_angel_wallet.total_ballance) + parseFloat(amount)).toString();
+            user.refer_code_status = 1
+        }
+
+        await referUser.save();
+        await user.save();
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: `ReferCode applyed successfully`,
+        });
+
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+
+    }
+}
 
 module.exports = {
     logInUser,
     getAllAngels,
     getOneUser,
+    applyReferralCode
 };
