@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const secret_key = "ASkdcbgijhdlosdhflsnvsndlffjhn"; 
+const secret_key = "ASkdcbgijhdlosdhflsnvsndlffjhn";
 
 // Generate a JWT token with username, user ID, and role in the payload
 function generateToken(user) {

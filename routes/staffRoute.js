@@ -1,14 +1,10 @@
 const express = require("express")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
-const { logInStaff, updateActiveStatus } = require("../controller/staffController/staffController")
+const { updateActiveStatus } = require("../controller/staffController/staffController")
 const { saveCallHistory, getCallHistory } = require("../controller/staffController/listingController")
 const { sendWithdrawRequest } = require("../controller/staffController/wirhdrawController")
 const { getOneStaff } = require("../controller/adminController/adminStaffController")
 const router = express.Router()
-
-router
-    .route("/auth/staff/login")
-    .post(logInStaff)
 
 router
     .route("/staff/update-active-status/:staffId")
@@ -16,7 +12,7 @@ router
 
 router
     .route("/staff/save-call-history")
-    .post(saveCallHistory)
+    .post(authenticateUser, authorizePermission("staff"), saveCallHistory)
 
 router
     .route("/staff/detail/:id")

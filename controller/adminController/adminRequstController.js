@@ -86,7 +86,7 @@ const updateWithdrawRequestStatus = async (req, res, next) => {
                 staffMember.earnings.sent_withdraw_request = 0;
                 await staffMember.save();
             }
-            
+
             await withdrawRequest.save();
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
