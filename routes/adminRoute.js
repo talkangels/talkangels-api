@@ -1,7 +1,7 @@
 const express = require("express")
 const { registerAdmin, loginAdmin, getAllUser, updateUserStatus } = require("../controller/adminController/adminController")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
-const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff } = require("../controller/adminController/adminStaffController")
+const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff, updateChargesForAllStaff } = require("../controller/adminController/adminStaffController")
 const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
 const { getAllWithdrawRequests, updateWithdrawRequestStatus } = require("../controller/adminController/adminRequstController")
 const { getTotalRatings } = require("../controller/userController/ratingController")
@@ -47,6 +47,10 @@ router
 router
     .route("/admin/all-rating")
     .get(authenticateUser, authorizePermission("admin"), getTotalRatings)
+
+router
+    .route("/admin/update-charges")
+    .post(authenticateUser, authorizePermission("admin"), updateChargesForAllStaff)
 
 
 // recharges admin routes...

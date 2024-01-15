@@ -3,6 +3,7 @@ const ErrorHandler = require("../../middleware/errorHandler");
 const Admin = require("../../models/adminModel");
 const { generateToken } = require("../../utils/tokenGenerator");
 const User = require("../../models/userModel");
+const staffModel = require("../../models/staffModel");
 
 const registerAdmin = async (req, res, next) => {
     try {
@@ -43,6 +44,9 @@ const loginAdmin = async (req, res, next) => {
         }
 
         if (password === user.password) {
+
+            const staffs = await staffModel.find()
+
             const userWithoutPassword = { ...user.toObject() };
             delete userWithoutPassword.password;
             if (fcmToken) {
@@ -54,6 +58,7 @@ const loginAdmin = async (req, res, next) => {
                 status: StatusCodes.OK,
                 message: `${user.role} logged in successfully`,
                 user: userWithoutPassword,
+                charges: staffs ? staffs[0].charges : 0,
                 Token: token
             });
         } else {

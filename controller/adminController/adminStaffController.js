@@ -176,10 +176,31 @@ const deleteStaff = async (req, res, next) => {
     }
 };
 
+const updateChargesForAllStaff = async (req, res, next) => {
+    try {
+        const { newCharges } = req.body;
+
+        if (!newCharges) {
+            return next(new ErrorHandler("New charges are required", StatusCodes.BAD_REQUEST));
+        }
+
+        await Staff.updateMany({}, { $set: { charges: newCharges } });
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: "Charges updated for all staff members successfully",
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
 module.exports = {
     addStaff,
     getAllStaff,
     getOneStaff,
     updateStaff,
-    deleteStaff
+    deleteStaff,
+    updateChargesForAllStaff
 };

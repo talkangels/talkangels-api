@@ -72,7 +72,7 @@ const staffSchema = new mongoose.Schema({
     },
     charges: {
         type: Number,
-        default: 10
+        default: 1
     },
     role: {
         type: String,
