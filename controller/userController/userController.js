@@ -52,6 +52,7 @@ const logIn = async (req, res, next) => {
                     message: `User logged in successfully`,
                     data: user,
                     role: user.role,
+                    user_type: "new",
                     Token: token,
                 });
             } else {
@@ -69,6 +70,7 @@ const logIn = async (req, res, next) => {
                     success: true,
                     message: `User logged in successfully`,
                     data: user,
+                    user_type: "old",
                     role: user.role,
                     Token: token,
                 });
