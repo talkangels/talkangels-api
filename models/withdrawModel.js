@@ -16,6 +16,10 @@ const withdrowSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
+            pending_amount: {
+                type: Number,
+                required: true
+            },
             date: {
                 type: Date,
                 required: true,

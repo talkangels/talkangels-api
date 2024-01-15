@@ -28,15 +28,23 @@ const sendWithdrawRequest = async (req, res, next) => {
             return next(new ErrorHandler("There are pending withdrawal requests. Please wait for approval or rejection.", StatusCodes.BAD_REQUEST));
         }
 
-        if (staff.earnings.current_earnings < request_amount) {
-            return next(new ErrorHandler("Insufficient earnings for withdrawal", StatusCodes.BAD_REQUEST));
+        if (staff.earnings.total_pending_money) {
+            if (staff.earnings.total_pending_money < request_amount) {
+                return next(new ErrorHandler("Insufficient earnings for withdrawal", StatusCodes.BAD_REQUEST));
+            }
+        } else {
+            if (staff.earnings.current_earnings < request_amount) {
+                return next(new ErrorHandler("Insufficient earnings for withdrawal", StatusCodes.BAD_REQUEST));
+            }
         }
 
-        staff.earnings.sent_withdraw_request += request_amount;
+
+        staff.earnings.sent_withdraw_request = request_amount;
 
         const newRequest = {
             request_amount,
             current_amount: staff.earnings.current_earnings,
+            pending_amount: staff.earnings.total_pending_money,
             date: new Date(),
             request_status: "pending",
         };
