@@ -122,7 +122,8 @@ const getAllAngels = async (req, res, next) => {
             "charges": staffs.charges,
             "fcmToken": staffs.fcmToken,
             "country_code": staffs.country_code,
-            "total_rating": staffs.total_rating
+            "total_rating": staffs.total_rating,
+            "reviews": staffs.reviews
         }))
 
         return res.status(StatusCodes.OK).json({
