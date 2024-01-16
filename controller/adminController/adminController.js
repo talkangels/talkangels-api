@@ -88,8 +88,8 @@ const getAllUser = async (req, res, next) => {
 
         const totalPages = Math.ceil(totalUsers / perPage);
 
-        return res.status(StatusCodes.CREATED).json({
-            status: StatusCodes.CREATED,
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
             success: true,
             data: user,
             pagination: {

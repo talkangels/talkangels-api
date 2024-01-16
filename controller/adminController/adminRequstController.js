@@ -5,11 +5,21 @@ const Staff = require("../../models/staffModel");
 
 const getAllWithdrawRequests = async (req, res, next) => {
     try {
+        const startDateParam = req.query.start_date;
+        const currentDateIST = new Date(startDateParam).toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+        const currentDate = new Date(currentDateIST).setHours(0, 0, 0, 0);
+
         const withdrawRequests = await Withdraws.find().populate({
             path: 'staff',
             model: 'Staff',
             select: 'name mobile_number',
         });
+
+        const DateRequests = [].concat(
+            ...withdrawRequests.map(requests =>
+                requests.request.find(req => new Date(req.date).setHours(0, 0, 0, 0) === currentDate)
+            )
+        );
 
         const formattedRequests = [].concat(
             ...withdrawRequests.map(requests =>
@@ -29,13 +39,12 @@ const getAllWithdrawRequests = async (req, res, next) => {
             status: StatusCodes.OK,
             success: true,
             message: "Withdrawal requests retrieved successfully",
-            data: formattedRequests,
+            data: startDateParam ? DateRequests : formattedRequests,
         });
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
 };
-
 
 const updateWithdrawRequestStatus = async (req, res, next) => {
     try {

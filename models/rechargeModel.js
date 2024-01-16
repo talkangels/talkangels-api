@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const rechargeSchema = new mongoose.Schema({
     amount: {
-        type: String,
+        type: Number,
         required: true
     },
     discount_amount: {
-        type: String,
+        type: Number,
         required: true
     },
     description: {

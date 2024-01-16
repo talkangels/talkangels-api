@@ -241,9 +241,48 @@ const applyReferralCode = async (req, res, next) => {
     }
 }
 
+const getOneAngel = async (req, res, next) => {
+    try {
+        const staffId = req.params.id;
+        const staff = await Staff.findById(staffId);
+
+        if (!staff) {
+            return next(new ErrorHandler(`Staff not found with id ${staffId}`, StatusCodes.NOT_FOUND));
+        }
+
+        const staffData = {
+            "_id": staff._id,
+            "user_name": staff.user_name,
+            "name": staff.name,
+            "mobile_number": staff.mobile_number,
+            "gender": staff.gender,
+            "bio": staff.bio,
+            "image": staff.image,
+            "language": staff.language,
+            "age": staff.age,
+            "active_status": staff.active_status,
+            "call_status": staff.call_status,
+            "charges": staff.charges,
+            "fcmToken": staff.fcmToken,
+            "country_code": staff.country_code,
+            "total_rating": staff.total_rating,
+            "reviews": staff.reviews.reduce((allReviews, review) => allReviews.concat(review.user_reviews), []),
+        }
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            data: staffData,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+}
+
 module.exports = {
     logIn,
     getAllAngels,
     getOneUser,
-    applyReferralCode
+    applyReferralCode,
+    getOneAngel
 };

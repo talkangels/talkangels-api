@@ -8,9 +8,8 @@ const authenticateUser = async (req, res, next) => {
     return next(new ErrorHandler("Please logIn to access this resource", 401));
   }
 
-  const bearer = authorizationHeader.split(" ");
-  // const token = bearer[1];
-  const token = req.headers.authorization.split(' ')[0];
+  const bearer = authorizationHeader.split(' ')[0];
+  const token = bearer;
 
   try {
     const { name, mobile_number, role } = verifyToken(token);

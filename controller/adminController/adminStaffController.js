@@ -196,11 +196,61 @@ const updateChargesForAllStaff = async (req, res, next) => {
     }
 };
 
+const getTopRatedStaff = async (req, res, next) => {
+    try {
+        const mostRatedStaff = await Staff.aggregate([
+            {
+                $match: { status: 1 },
+            },
+            {
+                $unwind: "$reviews",
+            },
+            {
+                $unwind: "$reviews.user_reviews",
+            },
+            {
+                $group: {
+                    _id: { staff_id: "$_id", staff_name: "$name" },
+                    mobile_number: { $first: "$mobile_number" },
+                    username: { $first: "$user_name" },
+                    rating: { $max: "$reviews.user_reviews.rating" },
+                },
+            },
+            {
+                $match: { "rating": { $ne: 0 } },
+            },
+            {
+                $sort: { rating: -1 },
+            },
+            {
+                $project: {
+                   _id: "$_id.staff_id",
+                    staff_name: "$_id.staff_name",
+                    mobile_number: 1,
+                    username: 1,
+                    rating: 1,
+                },
+            },
+            {
+                $limit: 3,
+            },
+        ]);
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            data: mostRatedStaff,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
 module.exports = {
     addStaff,
     getAllStaff,
     getOneStaff,
     updateStaff,
     deleteStaff,
-    updateChargesForAllStaff
+    updateChargesForAllStaff,
+    getTopRatedStaff
 };
