@@ -105,8 +105,6 @@ const getAllAngels = async (req, res, next) => {
         const allStaffs = await Staff.countDocuments();
 
         const totalPages = Math.ceil(totalStaffs / perPage);
-
-
         const staffData = staffs.map(staffs => ({
             "_id": staffs._id,
             "user_name": staffs.user_name,
@@ -123,7 +121,7 @@ const getAllAngels = async (req, res, next) => {
             "fcmToken": staffs.fcmToken,
             "country_code": staffs.country_code,
             "total_rating": staffs.total_rating,
-            "reviews": staffs.reviews
+            "reviews": staffs.reviews.reduce((allReviews, review) => allReviews.concat(review.user_reviews), []),
         }))
 
         return res.status(StatusCodes.OK).json({
