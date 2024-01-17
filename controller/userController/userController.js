@@ -266,6 +266,7 @@ const getOneAngel = async (req, res, next) => {
             "fcmToken": staff.fcmToken,
             "country_code": staff.country_code,
             "total_rating": staff.total_rating,
+            "listing_hours": staff.listing.total_minutes,
             "reviews": staff.reviews.reduce((allReviews, review) => allReviews.concat(review.user_reviews), []),
         }
 
