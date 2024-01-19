@@ -214,6 +214,7 @@ const getTopRatedStaff = async (req, res, next) => {
                     mobile_number: { $first: "$mobile_number" },
                     username: { $first: "$user_name" },
                     rating: { $max: "$reviews.user_reviews.rating" },
+                    charges: { charges: "$charges" },
                 },
             },
             {
@@ -224,11 +225,12 @@ const getTopRatedStaff = async (req, res, next) => {
             },
             {
                 $project: {
-                   _id: "$_id.staff_id",
+                    _id: "$_id.staff_id",
                     staff_name: "$_id.staff_name",
                     mobile_number: 1,
                     username: 1,
                     rating: 1,
+                    charges: "$_id.charges"
                 },
             },
             {
