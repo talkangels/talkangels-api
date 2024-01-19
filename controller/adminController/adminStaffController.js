@@ -210,11 +210,10 @@ const getTopRatedStaff = async (req, res, next) => {
             },
             {
                 $group: {
-                    _id: { staff_id: "$_id", staff_name: "$name" },
+                    _id: { staff_id: "$_id", staff_name: "$name", charges: "$charges" },
                     mobile_number: { $first: "$mobile_number" },
                     username: { $first: "$user_name" },
                     rating: { $max: "$reviews.user_reviews.rating" },
-                    charges: { charges: "$charges" },
                 },
             },
             {
