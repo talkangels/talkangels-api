@@ -55,7 +55,7 @@ const saveCallHistory = async (req, res, next) => {
         const earnings = calculateEarnings(minutes, chargePerMinute);
 
         staff.earnings.current_earnings = earnings + staff.earnings.current_earnings;
-        staff.earnings.total_pending_money = staff.earnings.total_money_withdraws === 0 ? earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws;
+        staff.earnings.total_pending_money = staff.earnings.total_money_withdraws === 0 ? staff.earnings.current_earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws;
         await staff.save();
 
         return res.status(StatusCodes.OK).json({
