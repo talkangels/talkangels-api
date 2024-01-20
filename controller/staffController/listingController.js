@@ -52,7 +52,7 @@ const saveCallHistory = async (req, res, next) => {
         staff.listing.total_minutes = formatMinutes(total_minutes);
 
         const chargePerMinute = staff.charges || 10;
-        const earnings = calculateEarnings(staff.listing.total_minutes, chargePerMinute);
+        const earnings = calculateEarnings(minutes, chargePerMinute);
 
         staff.earnings.current_earnings = earnings;
         staff.earnings.total_pending_money = staff.earnings.total_money_withdraws === 0 ? earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws;
@@ -89,8 +89,7 @@ function calculateTotalMinutes(callHistory) {
 }
 
 const calculateEarnings = (totalMinutes, chargePerMinute) => {
-    const totalMinutesNumeric = parseInt(totalMinutes.split('hr:')[0]) * 60 + parseInt(totalMinutes.split('hr:')[1].replace('min', ''));
-    return totalMinutesNumeric * chargePerMinute;
+    return totalMinutes * chargePerMinute;
 };
 
 const getCallHistory = async (req, res, next) => {

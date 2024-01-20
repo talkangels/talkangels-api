@@ -189,7 +189,7 @@ const updateChargesForAllStaff = async (req, res, next) => {
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
             success: true,
-            message: "Charges updated for all staff members successfully",
+            message: "Charges updated successfully",
         });
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
