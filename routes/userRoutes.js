@@ -1,7 +1,7 @@
 const express = require("express")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 
-const { getAllAngels, getOneUser, applyReferralCode, getOneAngel, addReport } = require("../controller/userController/userController")
+const { getAllAngels, getOneUser, applyReferralCode, getOneAngel, addReport, deleteUser } = require("../controller/userController/userController")
 const { generateAgoraInfoForUser, updateCallStatus } = require("../controller/userController/userCallController")
 const { getAllRecharges, addBallance } = require("../controller/userController/paymantController")
 const { addRating } = require("../controller/userController/ratingController")
@@ -52,5 +52,9 @@ router
 router
     .route("/user/add-report")
     .post(authenticateUser, authorizePermission("user"), addReport)
+
+router
+    .route("/user/delete/:id")
+    .delete(authenticateUser, authorizePermission("user"), deleteUser)
 
 module.exports = router

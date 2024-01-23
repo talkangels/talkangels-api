@@ -94,7 +94,6 @@ const updateReportStatus = async (req, res, next) => {
     }
 }
 
-
 module.exports = {
     getAllReport,
     updateReportStatus

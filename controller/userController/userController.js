@@ -86,19 +86,6 @@ const getOneUser = async (req, res, next) => {
     }
 }
 
-const generateRandomReferralCode = () => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const codeLength = 8;
-    let referralCode = '';
-
-    for (let i = 0; i < codeLength; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        referralCode += characters.charAt(randomIndex);
-    }
-
-    return referralCode;
-};
-
 const applyReferralCode = async (req, res, next) => {
     try {
         const { user_id, refer_code } = req.body;
@@ -230,10 +217,33 @@ const addReport = async (req, res, next) => {
     }
 }
 
+const deleteUser = async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+
+        const existingUser = await User.findById(userId);
+
+        if (!existingUser) {
+            return next(new ErrorHandler(`User not found`, StatusCodes.NOT_FOUND));
+        }
+
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: `User deleted successfully`
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
 module.exports = {
     getAllAngels,
     getOneUser,
     applyReferralCode,
     getOneAngel,
-    addReport
+    addReport,
+    deleteUser
 };
