@@ -55,6 +55,47 @@ const getAllReport = async (req, res, next) => {
     }
 }
 
+const updateReportStatus = async (req, res, next) => {
+    try {
+        const { reportId } = req.params;
+        const { newStatus } = req.body;
+
+        if (![0, 1].includes(newStatus)) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                status: StatusCodes.BAD_REQUEST,
+                success: false,
+                message: "Invalid status value",
+            });
+        }
+
+        const updatedReport = await Report.findByIdAndUpdate(
+            reportId,
+            { $set: { status: newStatus } },
+            { new: true }
+        );
+
+        if (!updatedReport) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                status: StatusCodes.NOT_FOUND,
+                success: false,
+                message: "Report not found",
+            });
+        }
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: "Report status updated successfully",
+            data: updatedReport,
+        });
+
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+}
+
+
 module.exports = {
-    getAllReport
+    getAllReport,
+    updateReportStatus
 };
