@@ -4,6 +4,7 @@ const { updateActiveStatus } = require("../controller/staffController/staffContr
 const { saveCallHistory, getCallHistory } = require("../controller/staffController/listingController")
 const { sendWithdrawRequest } = require("../controller/staffController/wirhdrawController")
 const { getOneStaff } = require("../controller/adminController/adminStaffController")
+const { addReport } = require("../controller/userController/userController")
 const router = express.Router()
 
 router
@@ -25,5 +26,9 @@ router
 router
     .route("/staff/send-withdraw-request")
     .post(authenticateUser, authorizePermission("staff"), sendWithdrawRequest)
+
+router
+    .route("/staff/add-report")
+    .post(authenticateUser, authorizePermission("staff"), addReport)
 
 module.exports = router

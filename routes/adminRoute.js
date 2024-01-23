@@ -5,6 +5,9 @@ const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff, updateChar
 const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
 const { getAllWithdrawRequests, updateWithdrawRequestStatus } = require("../controller/adminController/adminRequstController")
 const { getTotalRatings } = require("../controller/userController/ratingController")
+const { getAllReport } = require("../controller/adminController/reportController")
+const FileUplaodToFirebase = require("../middleware/multerConfig");
+
 const router = express.Router()
 
 router
@@ -23,10 +26,14 @@ router
     .route("/admin/update-user/:id")
     .put(authenticateUser, authorizePermission("admin"), updateUserStatus)
 
+router
+    .route("/admin/all-report")
+    .get(authenticateUser, authorizePermission("admin"), getAllReport)
+
 // staff admin routes...
 router
     .route("/admin/add-staff")
-    .post(authenticateUser, authorizePermission("admin"), addStaff)
+    .post(authenticateUser, authorizePermission("admin"), FileUplaodToFirebase.uploadMulter.single("image"), addStaff)
 
 router
     .route("/admin/all-staff")
@@ -38,7 +45,7 @@ router
 
 router
     .route("/admin/update-staff/:id")
-    .put(authenticateUser, authorizePermission("admin"), updateStaff)
+    .put(authenticateUser, authorizePermission("admin"), FileUplaodToFirebase.uploadMulter.single("image"), updateStaff)
 
 router
     .route("/admin/delete-staff/:id")

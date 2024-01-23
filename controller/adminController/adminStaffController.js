@@ -1,11 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const Staff = require("../../models/staffModel");
+const FileUplaodToFirebase = require("../../middleware/multerConfig");
 
 const addStaff = async (req, res, next) => {
     try {
         const {
-            image,
             name,
             mobile_number,
             gender,
@@ -22,8 +22,16 @@ const addStaff = async (req, res, next) => {
             return next(new ErrorHandler("mobile_number is already in use", StatusCodes.BAD_REQUEST));
         }
 
+        const image = req.file;
+
+        if (!image) {
+            return next(new ErrorHandler("Image image is required", StatusCodes.BAD_REQUEST));
+        }
+
+        const certificateDownloadURL = await FileUplaodToFirebase.uploadCertifiesToFierbase(image);
+
         const staff = new Staff({
-            image,
+            image: certificateDownloadURL,
             name,
             mobile_number,
             gender,
@@ -110,12 +118,11 @@ const updateStaff = async (req, res, next) => {
             mobile_number,
             gender,
             bio,
-            image,
             Language,
             Age,
             status,
-            charges,
         } = req.body;
+        const newImage = req.file;
 
         const updatedStaffData = {
             user_name,
@@ -123,12 +130,21 @@ const updateStaff = async (req, res, next) => {
             mobile_number,
             gender,
             bio,
-            image,
             Language,
             Age,
             status,
-            charges,
         };
+
+        if (newImage) {
+            const existingEmployee = await Staff.findById(staffId);
+
+            if (existingEmployee.image) {
+                await FileUplaodToFirebase.deleteFileFromFirebase(existingEmployee.image);
+            }
+
+            const newAvatarURL = await FileUplaodToFirebase.uploadCertifiesToFierbase(newImage);
+            updatedStaffData.image = newAvatarURL;
+        }
 
         const updatedStaff = await Staff.findByIdAndUpdate(
             staffId,
@@ -246,6 +262,7 @@ const getTopRatedStaff = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
 };
+
 module.exports = {
     addStaff,
     getAllStaff,
