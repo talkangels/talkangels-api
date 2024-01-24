@@ -108,8 +108,6 @@ const saveCallHistory = async (req, res, next) => {
         if (seconds !== 0) {
             const chargePerMinute = staff.charges || 1;
             const earnings = calculateEarnings(seconds, chargePerMinute);
-
-            // Use toFixed(2) to round to two decimal places
             staff.earnings.current_earnings = parseFloat((earnings + staff.earnings.current_earnings).toFixed(2));
             staff.earnings.total_pending_money = parseFloat((staff.earnings.total_money_withdraws === 0 ? staff.earnings.current_earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws).toFixed(2));
 

@@ -1,9 +1,9 @@
 const express = require("express")
-const { registerAdmin, loginAdmin, getAllUser, updateUserStatus } = require("../controller/adminController/adminController")
+const { registerAdmin, loginAdmin, getAllUser, updateUserStatus, getAdminDetail } = require("../controller/adminController/adminController")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
-const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff, updateChargesForAllStaff, getTopRatedStaff } = require("../controller/adminController/adminStaffController")
+const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff } = require("../controller/adminController/adminStaffController")
 const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
-const { getAllWithdrawRequests, updateWithdrawRequestStatus } = require("../controller/adminController/adminRequstController")
+const { getAllWithdrawRequests, updateWithdrawRequestStatus, updateChargesForAllStaff, getTopRatedStaff } = require("../controller/adminController/adminDashbordController")
 const { getTotalRatings } = require("../controller/userController/ratingController")
 const { getAllReport, updateReportStatus } = require("../controller/adminController/reportController")
 const FileUplaodToFirebase = require("../middleware/multerConfig");
@@ -19,12 +19,25 @@ router
     .post(loginAdmin)
 
 router
+    .route("/admin/detail/:id")
+    .get(authenticateUser, authorizePermission("admin"), getAdminDetail)
+
+router
     .route("/admin/all-user")
     .get(authenticateUser, authorizePermission("admin"), getAllUser)
 
 router
     .route("/admin/update-user/:id")
     .put(authenticateUser, authorizePermission("admin"), updateUserStatus)
+
+router
+    .route("/admin/update-charges")
+    .post(authenticateUser, authorizePermission("admin"), updateChargesForAllStaff)
+
+router
+    .route("/admin/most-rated")
+    .get(authenticateUser, authorizePermission("admin"), getTopRatedStaff)
+
 
 // Report admin routes...
 router
@@ -59,14 +72,6 @@ router
 router
     .route("/admin/all-rating")
     .get(authenticateUser, authorizePermission("admin"), getTotalRatings)
-
-router
-    .route("/admin/update-charges")
-    .post(authenticateUser, authorizePermission("admin"), updateChargesForAllStaff)
-
-router
-    .route("/admin/most-rated")
-    .get(authenticateUser, authorizePermission("admin"), getTopRatedStaff)
 
 // recharges admin routes...
 router

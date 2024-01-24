@@ -13,6 +13,10 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    charges: {
+        type: Number,
+        default: 1
+    },
     mobile_number: {
         type: Number,
         required: true

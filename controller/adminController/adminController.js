@@ -138,9 +138,30 @@ const updateUserStatus = async (req, res, next) => {
     }
 };
 
+const getAdminDetail = async (req, res, next) => {
+    try {
+        const adminId = req.params.id;
+
+        const admin = await Admin.findById(adminId).select('-password');
+
+        if (!admin) {
+            return next(new ErrorHandler(`Admin not found with id ${adminId}`, StatusCodes.NOT_FOUND));
+        }
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            data: admin,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+}
+
 module.exports = {
     registerAdmin,
     loginAdmin,
     getAllUser,
-    updateUserStatus
+    updateUserStatus,
+    getAdminDetail
 };
