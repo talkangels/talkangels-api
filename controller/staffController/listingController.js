@@ -75,7 +75,7 @@ const saveCallHistory = async (req, res, next) => {
         currentTime.setSeconds(currentTime.getSeconds() - seconds);
 
         const existingUser = staff.listing.call_history.find(entry => entry.user.equals(user_id));
-        const formattedSeconds = formatSeconds(seconds);
+        const formattedSeconds = formatSecondsin(seconds);
 
         if (!existingUser) {
             staff.listing.call_history.push({
@@ -104,15 +104,15 @@ const saveCallHistory = async (req, res, next) => {
                 });
             }
         }
-        
+
         if (seconds !== 0) {
             const chargePerMinute = staff.charges || 1;
             const earnings = calculateEarnings(seconds, chargePerMinute);
-        
+
             // Use toFixed(2) to round to two decimal places
             staff.earnings.current_earnings = parseFloat((earnings + staff.earnings.current_earnings).toFixed(2));
             staff.earnings.total_pending_money = parseFloat((staff.earnings.total_money_withdraws === 0 ? staff.earnings.current_earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws).toFixed(2));
-        
+
             const totalSeconds = calculateTotalSeconds(staff.listing.call_history);
             staff.listing.total_minutes = formatSeconds(totalSeconds);
         }
@@ -137,18 +137,37 @@ const saveCallHistory = async (req, res, next) => {
     }
 };
 
-function formatSeconds(seconds) {
+function formatSecondsin(seconds) {
     const formattedMinutes = `${Math.floor(seconds / 60)}min ${seconds % 60}sec`;
     return formattedMinutes;
 }
 
 function calculateTotalSeconds(callHistory) {
-    return callHistory.reduce((total, entry) => {
+    const totalSeconds = callHistory.reduce((total, entry) => {
         return total + entry.history.reduce((entryTotal, historyEntry) => {
             const secondsString = historyEntry.minutes || '0min 0sec';
-            return entryTotal + parseInt(secondsString.split('min')[0]) * 60 + parseInt(secondsString.split('min ')[1].split('sec')[0]);
+            const [minutesPart, secondsPart] = secondsString.split('min ');
+
+            const minutes = parseInt(minutesPart) || 0;
+            const seconds = parseInt(secondsPart.split('sec')[0]) || 0;
+
+            return entryTotal + minutes * 60 + seconds;
         }, 0);
     }, 0);
+
+    return isNaN(totalSeconds) ? 0 : totalSeconds;
+}
+
+function formatSeconds(totalSeconds) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedHours = hours.toString().padStart(2, '0');
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedSeconds = seconds.toString().padStart(2, '0');
+
+    return `${formattedHours}h:${formattedMinutes}m:${formattedSeconds}s`;
 }
 
 
@@ -157,8 +176,6 @@ const calculateEarnings = (totalSeconds, chargePerMinute) => {
     const earnings = totalSeconds * chargePerSecond;
     return parseFloat(earnings.toFixed(2));
 };
-
-
 
 module.exports = {
     saveCallHistory,
