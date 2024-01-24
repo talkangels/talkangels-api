@@ -44,6 +44,7 @@ const generateAgoraInfoForUser = async (req, res, next) => {
                 channelName: channelName,
                 agora_token: token.agora_token,
                 agora_app_id: token.app_id,
+                call_type: "calling",
             };
 
             const message = {
@@ -123,7 +124,86 @@ const updateCallStatus = async (req, res, next) => {
     }
 };
 
+const callRejectNotification = async (req, res, next) => {
+    try {
+        const { angel_id, user_id, type } = req.body;
+        if (!angel_id || !user_id || !type) {
+            return next(new ErrorHandler("AngelId and UserId are required for reject Call", StatusCodes.BAD_REQUEST));
+        }
+
+        const staff = await Staff.findById(angel_id);
+        const user = await User.findById(user_id);
+
+        if (!staff) {
+            return next(new ErrorHandler("Angel not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (type === 'user') {
+            if (user.fcmToken) {
+                const userData = {
+                    _id: staff._id.toString(),
+                    name: staff.name,
+                    mobile_number: staff.mobile_number.toString(),
+                    image: staff.image,
+                    call_type: "reject",
+                };
+
+                const message = {
+                    token: user.fcmToken,
+                    notification: {
+                        title: "reject call...",
+                        body: "Angel is call rejected",
+                    },
+                    data: userData
+                };
+                const response = await admin.messaging().send(message);
+                return res.status(StatusCodes.OK).json({
+                    status: StatusCodes.OK,
+                    success: true,
+                    message: `Call End`,
+                });
+            }
+        } else if (type === 'staff') {
+            if (staff.fcmToken) {
+                const userData = {
+                    _id: user._id.toString(),
+                    name: user.name,
+                    mobile_number: user.mobile_number.toString(),
+                    image: user.image,
+                    call_type: "reject",
+                };
+
+                const message = {
+                    token: staff.fcmToken,
+                    notification: {
+                        title: "reject call...",
+                        body: "User is call rejected",
+                    },
+                    data: userData
+                };
+                const response = await admin.messaging().send(message);
+
+                return res.status(StatusCodes.OK).json({
+                    status: StatusCodes.OK,
+                    success: true,
+                    message: `Call End`,
+                });
+            }
+        } else {
+            return next(new ErrorHandler('server error', StatusCodes.INTERNAL_SERVER_ERROR));
+        }
+
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+}
+
 module.exports = {
     generateAgoraInfoForUser,
-    updateCallStatus
+    updateCallStatus,
+    callRejectNotification
 };

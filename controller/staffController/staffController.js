@@ -1,7 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const Staff = require("../../models/staffModel");
-const { generateToken } = require("../../utils/tokenGenerator");
 
 const updateActiveStatus = async (req, res, next) => {
     try {

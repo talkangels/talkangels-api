@@ -100,6 +100,10 @@ const staffSchema = new mongoose.Schema({
                             type: String,
                             required: true,
                         },
+                        mobile_number: {
+                            type: Number,
+                            required: true,
+                        },
                         minutes: {
                             type: String,
                             required: true,

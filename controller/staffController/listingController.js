@@ -24,10 +24,11 @@ const saveCallHistory = async (req, res, next) => {
         const formattedMinutes = formatMinutes(minutes);
         if (!existingUser) {
             staff.listing.call_history.push({
-                user: user_id,
+                user: user_id, 
                 history: [{
                     date: currentTime,
                     call_type,
+                    mobile_number: user.mobile_number,
                     minutes: formattedMinutes,
                 }],
             });
@@ -37,6 +38,7 @@ const saveCallHistory = async (req, res, next) => {
                 existingUser.history.push({
                     date: currentTime,
                     call_type,
+                    mobile_number: user.mobile_number,
                     minutes: formattedMinutes,
                 });
             } else {
@@ -48,14 +50,16 @@ const saveCallHistory = async (req, res, next) => {
             }
         }
 
-        const total_minutes = calculateTotalMinutes(staff.listing.call_history)
-        staff.listing.total_minutes = formatMinutes(total_minutes);
+        if (minutes !== 0) {
+            const chargePerMinute = staff.charges || 10;
+            const earnings = calculateEarnings(minutes, chargePerMinute);
 
-        const chargePerMinute = staff.charges || 10;
-        const earnings = calculateEarnings(minutes, chargePerMinute);
+            staff.earnings.current_earnings = earnings + staff.earnings.current_earnings;
+            staff.earnings.total_pending_money = staff.earnings.total_money_withdraws === 0 ? staff.earnings.current_earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws;
+            const total_minutes = calculateTotalMinutes(staff.listing.call_history)
+            staff.listing.total_minutes = formatMinutes(total_minutes);
+        }
 
-        staff.earnings.current_earnings = earnings + staff.earnings.current_earnings;
-        staff.earnings.total_pending_money = staff.earnings.total_money_withdraws === 0 ? staff.earnings.current_earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws;
         await staff.save();
 
         return res.status(StatusCodes.OK).json({
@@ -106,6 +110,18 @@ const getCallHistory = async (req, res, next) => {
         }
 
         const formattedCallHistory = staff.listing.call_history.map(entry => {
+            if (!entry.user) {
+                return {
+                    user: null,
+                    history: entry.history.map(history => ({
+                        date: history.date,
+                        call_type: history.call_type,
+                        minutes: history.minutes,
+                        mobile_number: history.mobile_number,
+                    })),
+                };
+            }
+
             return {
                 user: {
                     user_name: entry.user.name,
@@ -116,6 +132,7 @@ const getCallHistory = async (req, res, next) => {
                     date: history.date,
                     call_type: history.call_type,
                     minutes: history.minutes,
+                    mobile_number: history.mobile_number,
                 })),
             };
         });
