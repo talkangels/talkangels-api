@@ -6,9 +6,6 @@ const Report = require("../../models/reportAndProblem");
 
 const getAllAngels = async (req, res, next) => {
     try {
-        const page = parseInt(req.query.page_no) || 1;
-        const perPage = parseInt(req.query.items_per_page) || 10;
-
         const { search_text } = req.query;
         const query = {
             ... (search_text ? {
@@ -20,14 +17,8 @@ const getAllAngels = async (req, res, next) => {
             status: 1,
         };
 
-        const skip = (page - 1) * perPage;
         const staffs = await Staff.find(query)
-            .skip(skip)
-            .limit(perPage);
-        const totalStaffs = await Staff.countDocuments(query);
-        const allStaffs = await Staff.countDocuments();
 
-        const totalPages = Math.ceil(totalStaffs / perPage);
         const staffData = staffs.map(staffs => ({
             "_id": staffs._id,
             "user_name": staffs.user_name,
@@ -51,13 +42,6 @@ const getAllAngels = async (req, res, next) => {
             status: StatusCodes.OK,
             success: true,
             data: staffData,
-            pagination: {
-                total_items: allStaffs,
-                total_pages: totalPages,
-                current_page_item: staffs.length,
-                page_no: parseInt(page),
-                items_per_page: parseInt(perPage),
-            },
         });
 
     } catch (error) {
@@ -84,7 +68,7 @@ const getOneUser = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
 
     }
-}
+};
 
 const applyReferralCode = async (req, res, next) => {
     try {
@@ -149,7 +133,7 @@ const applyReferralCode = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
 
     }
-}
+};
 
 const getOneAngel = async (req, res, next) => {
     try {
@@ -188,7 +172,7 @@ const getOneAngel = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const addReport = async (req, res, next) => {
     try {
@@ -215,7 +199,7 @@ const addReport = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const deleteUser = async (req, res, next) => {
     try {

@@ -71,7 +71,7 @@ const generateAgoraInfoForUser = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 function generateUniqueChannelName(staff_name, user_name) {
     return `${staff_name}_${Date.now()}_${user_name}`;
@@ -200,7 +200,7 @@ const callRejectNotification = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 module.exports = {
     generateAgoraInfoForUser,

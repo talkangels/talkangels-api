@@ -79,7 +79,7 @@ const logIn = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const generateRandomReferralCode = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -49,7 +49,7 @@ const addStaff = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const getAllStaff = async (req, res, next) => {
     try {
@@ -85,7 +85,7 @@ const getAllStaff = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const getOneStaff = async (req, res, next) => {
     try {
@@ -106,7 +106,7 @@ const getOneStaff = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
 
     }
-}
+};
 
 const updateStaff = async (req, res, next) => {
     try {

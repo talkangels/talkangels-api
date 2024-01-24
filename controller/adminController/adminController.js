@@ -104,7 +104,7 @@ const getAllUser = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const updateUserStatus = async (req, res, next) => {
     try {
@@ -136,7 +136,7 @@ const updateUserStatus = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 module.exports = {
     registerAdmin,

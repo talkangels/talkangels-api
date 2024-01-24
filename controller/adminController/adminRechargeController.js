@@ -22,7 +22,7 @@ const addRecharges = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const getAllRecharges = async (req, res, next) => {
     try {
@@ -54,7 +54,7 @@ const getAllRecharges = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const getOneRecharges = async (req, res, next) => {
     try {
@@ -75,7 +75,7 @@ const getOneRecharges = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
 
     }
-}
+};
 
 const updateRecharge = async (req, res, next) => {
     try {

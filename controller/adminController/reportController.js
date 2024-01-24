@@ -1,8 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const Report = require("../../models/reportAndProblem");
-const User = require("../../models/userModel");
-const Staff = require("../../models/staffModel");
 
 const getAllReport = async (req, res, next) => {
     try {
@@ -53,7 +51,7 @@ const getAllReport = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 const updateReportStatus = async (req, res, next) => {
     try {
@@ -92,7 +90,7 @@ const updateReportStatus = async (req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
-}
+};
 
 module.exports = {
     getAllReport,

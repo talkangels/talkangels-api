@@ -21,7 +21,7 @@ const giveCurrentDateTime = () => {
     const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     const dateTime = date + ' ' + time;
     return dateTime;
-}
+};
 
 const uploadCertifiesToFierbase = async (file) => {
     try {
@@ -39,7 +39,7 @@ const uploadCertifiesToFierbase = async (file) => {
         console.error("Error uploading to Firebase Storage:", error);
         throw error;
     }
-}
+};
 
 const deleteFileFromFirebase = async (fileName) => {
     try {
