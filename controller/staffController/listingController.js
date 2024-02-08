@@ -168,7 +168,6 @@ function formatSeconds(totalSeconds) {
     return `${formattedHours}h:${formattedMinutes}m:${formattedSeconds}s`;
 }
 
-
 const calculateEarnings = (totalSeconds, chargePerMinute) => {
     const chargePerSecond = chargePerMinute / 60;
     const earnings = totalSeconds * chargePerSecond;

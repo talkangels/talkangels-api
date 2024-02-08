@@ -141,7 +141,6 @@ const updateUserStatus = async (req, res, next) => {
 const getAdminDetail = async (req, res, next) => {
     try {
         const adminId = req.params.id;
-
         const admin = await Admin.findById(adminId).select('-password');
 
         if (!admin) {

@@ -3,8 +3,9 @@ const ErrorHandler = require("../../middleware/errorHandler");
 const User = require("../../models/userModel");
 const Staff = require("../../models/staffModel");
 const Report = require("../../models/reportAndProblem");
+const socketManager = require('../../utils/socketManager'); // Import socketManager
 
-const getAllAngels = async (req, res, next) => {
+async function getAllAngels(req, res, next) {
     try {
         const { search_text } = req.query;
         const query = {
@@ -18,7 +19,6 @@ const getAllAngels = async (req, res, next) => {
         };
 
         const staffs = await Staff.find(query)
-
         const staffData = staffs.map(staffs => ({
             "_id": staffs._id,
             "user_name": staffs.user_name,
@@ -37,6 +37,8 @@ const getAllAngels = async (req, res, next) => {
             "total_rating": staffs.total_rating,
             "reviews": staffs.reviews.reduce((allReviews, review) => allReviews.concat(review.user_reviews), []),
         }))
+
+        socketManager.getIo().emit('updateAllAngels', { data: staffData });
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,

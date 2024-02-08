@@ -29,10 +29,9 @@ router
     .route("/call-reject")
     .post(callRejectNotification)
 
-
 router
     .route("/user/update-call-status/:staffId")
-    .put(authenticateUser, authorizePermission("user"), updateCallStatus)
+    .put(authenticateUser, updateCallStatus)
 
 router
     .route("/user/all-recharge")
