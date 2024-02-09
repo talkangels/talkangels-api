@@ -2,7 +2,7 @@ const express = require("express")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 
 const { getAllAngels, getOneUser, applyReferralCode, getOneAngel, addReport, deleteUser } = require("../controller/userController/userController")
-const { generateAgoraInfoForUser, updateCallStatus, callRejectNotification } = require("../controller/userController/userCallController")
+const { generateAgoraInfoForUser, callRejectNotification } = require("../controller/userController/userCallController")
 const { getAllRecharges, addBallance } = require("../controller/userController/paymantController")
 const { addRating } = require("../controller/userController/ratingController")
 const { logIn } = require("../controller/logInController")
@@ -29,9 +29,6 @@ router
     .route("/call-reject")
     .post(callRejectNotification)
 
-router
-    .route("/user/update-call-status/:staffId")
-    .put(authenticateUser, updateCallStatus)
 
 router
     .route("/user/all-recharge")

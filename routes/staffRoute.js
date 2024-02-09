@@ -1,6 +1,6 @@
 const express = require("express")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
-const { updateActiveStatus } = require("../controller/staffController/staffController")
+const { updateActiveStatus, updateCallStatus } = require("../controller/staffController/staffController")
 const { saveCallHistory, getCallHistory } = require("../controller/staffController/listingController")
 const { sendWithdrawRequest } = require("../controller/staffController/wirhdrawController")
 const { getOneStaff } = require("../controller/adminController/adminStaffController")
@@ -30,5 +30,9 @@ router
 router
     .route("/staff/add-report")
     .post(authenticateUser, authorizePermission("staff"), addReport)
+
+router
+    .route("/user/update-call-status/:staffId")
+    .put(authenticateUser, updateCallStatus)
 
 module.exports = router

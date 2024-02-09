@@ -77,53 +77,6 @@ function generateUniqueChannelName(staff_name, user_name) {
     return `${staff_name}_${Date.now()}_${user_name}`;
 }
 
-const updateCallStatus = async (req, res, next) => {
-    try {
-        const { staffId } = req.params;
-        const { call_status } = req.body;
-
-        const staff = await Staff.findById(staffId);
-
-        if (!staff) {
-            return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
-        }
-
-        if (staff.active_status === "Offline") {
-            return next(new ErrorHandler("Please do not update the call status. Angel is offline.", StatusCodes.BAD_REQUEST));
-        }
-
-        if (!["Available", "Busy"].includes(call_status)) {
-            return next(new ErrorHandler("Invalid call_status", StatusCodes.BAD_REQUEST));
-        }
-
-        if (staff.call_status === "Available" && call_status === "Busy") {
-            staff.call_status = call_status;
-        } else if (staff.call_status === "Busy" && call_status === "Available") {
-            staff.call_status = call_status;
-        } else {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                status: StatusCodes.BAD_REQUEST,
-                success: false,
-                message: "Invalid call status transition",
-            });
-        }
-        await staff.save();
-
-        return res.status(StatusCodes.OK).json({
-            status: StatusCodes.OK,
-            success: true,
-            message: `Call status updated successfully for staff`,
-            data: {
-                name: staff.name,
-                mobile_number: staff.mobile_number,
-                callStatus: staff.call_status,
-            },
-        });
-    } catch (error) {
-        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
-    }
-};
-
 const callRejectNotification = async (req, res, next) => {
     try {
         const { angel_id, user_id, type } = req.body;
@@ -204,6 +157,5 @@ const callRejectNotification = async (req, res, next) => {
 
 module.exports = {
     generateAgoraInfoForUser,
-    updateCallStatus,
     callRejectNotification
 };
