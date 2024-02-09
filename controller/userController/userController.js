@@ -3,7 +3,6 @@ const ErrorHandler = require("../../middleware/errorHandler");
 const User = require("../../models/userModel");
 const Staff = require("../../models/staffModel");
 const Report = require("../../models/reportAndProblem");
-const socketManager = require('../../utils/socketManager'); // Import socketManager
 
 async function getAllAngels(req, res, next) {
     try {
@@ -37,8 +36,6 @@ async function getAllAngels(req, res, next) {
             "total_rating": staffs.total_rating,
             "reviews": staffs.reviews.reduce((allReviews, review) => allReviews.concat(review.user_reviews), []),
         }))
-
-        socketManager.getIo().emit('updateAllAngels', { data: staffData });
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,

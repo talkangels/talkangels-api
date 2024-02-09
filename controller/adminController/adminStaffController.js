@@ -19,7 +19,7 @@ const addStaff = async (req, res, next) => {
 
         const existingStaff = await Staff.findOne({ mobile_number });
         if (existingStaff) {
-            return next(new ErrorHandler("mobile_number is already in use", StatusCodes.BAD_REQUEST));
+            return next(new ErrorHandler("Mobile Number is already in use", StatusCodes.BAD_REQUEST));
         }
 
         const image = req.file;

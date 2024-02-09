@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const Staff = require("../../models/staffModel");
+const socketManager = require('../../utils/socketManager'); 
 
 const updateActiveStatus = async (req, res, next) => {
     try {
@@ -33,6 +34,28 @@ const updateActiveStatus = async (req, res, next) => {
             });
         }
         await staff.save();
+
+        const staffs = await Staff.find({ status: 1 })
+        const staffData = staffs.map(staffs => ({
+            "_id": staffs._id,
+            "user_name": staffs.user_name,
+            "name": staffs.name,
+            "mobile_number": staffs.mobile_number,
+            "gender": staffs.gender,
+            "bio": staffs.bio,
+            "image": staffs.image,
+            "language": staffs.language,
+            "age": staffs.age,
+            "active_status": staffs.active_status,
+            "call_status": staffs.call_status,
+            "charges": staffs.charges,
+            "fcmToken": staffs.fcmToken,
+            "country_code": staffs.country_code,
+            "total_rating": staffs.total_rating,
+            "reviews": staffs.reviews.reduce((allReviews, review) => allReviews.concat(review.user_reviews), []),
+        }))
+
+        socketManager.getIo().emit('getAllAngels', { data: staffData });
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
