@@ -50,18 +50,20 @@ const updateActiveStatus = async (req, res, next) => {
         if (!["Online", "Offline"].includes(active_status)) {
             return next(new ErrorHandler("Invalid active_status", StatusCodes.BAD_REQUEST));
         }
+        
+        staff.active_status = active_status;
 
-        if (staff.active_status === "Online" && active_status === "Offline") {
-            staff.active_status = active_status;
-        } else if (staff.active_status === "Offline" && active_status === "Online") {
-            staff.active_status = active_status;
-        } else {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                status: StatusCodes.BAD_REQUEST,
-                success: false,
-                message: "Invalid Active status transition",
-            });
-        }
+        // if (staff.active_status === "Online" && active_status === "Offline") {
+        //     staff.active_status = active_status;
+        // } else if (staff.active_status === "Offline" && active_status === "Online") {
+        //     staff.active_status = active_status;
+        // } else {
+        //     return res.status(StatusCodes.BAD_REQUEST).json({
+        //         status: StatusCodes.BAD_REQUEST,
+        //         success: false,
+        //         message: "Invalid Active status transition",
+        //     });
+        // }
         await staff.save();
 
         await getAllAngelsSocket()
