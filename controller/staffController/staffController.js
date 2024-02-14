@@ -43,9 +43,9 @@ const updateActiveStatus = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        if (staff.call_status === "Busy") {
-            return next(new ErrorHandler("Please do not update the active status. Angel is Busy.", StatusCodes.BAD_REQUEST));
-        }
+        // if (staff.call_status === "Busy") {
+        //     return next(new ErrorHandler("Please do not update the active status. Angel is Busy.", StatusCodes.BAD_REQUEST));
+        // }
 
         if (!["Online", "Offline"].includes(active_status)) {
             return next(new ErrorHandler("Invalid active_status", StatusCodes.BAD_REQUEST));
@@ -94,9 +94,9 @@ const updateCallStatus = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        if (staff.active_status === "Offline") {
-            return next(new ErrorHandler("Please do not update the call status. Angel is offline.", StatusCodes.BAD_REQUEST));
-        }
+        // if (staff.active_status === "Offline") {
+        //     return next(new ErrorHandler("Please do not update the call status. Angel is offline.", StatusCodes.BAD_REQUEST));
+        // }
 
         if (!["Available", "Busy"].includes(call_status)) {
             return next(new ErrorHandler("Invalid call_status", StatusCodes.BAD_REQUEST));
