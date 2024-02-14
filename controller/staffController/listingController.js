@@ -55,7 +55,6 @@ const getCallHistory = async (req, res, next) => {
     }
 };
 
-
 const saveCallHistory = async (req, res, next) => {
     try {
         const { staff_id, user_id, call_type, seconds } = req.body;
@@ -67,17 +66,25 @@ const saveCallHistory = async (req, res, next) => {
         const staff = await Staff.findById(staff_id);
         const user = await User.findById(user_id);
 
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
         if (!staff) {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (user.talk_angel_wallet.total_ballance <= 0) {
+            return next(new ErrorHandler("Insufficient balance. Please recharge your account.", StatusCodes.NOT_FOUND));
         }
 
         const currentTime = new Date();
         currentTime.setSeconds(currentTime.getSeconds() - seconds);
 
-        const existingUser = staff.listing.call_history.find(entry => entry.user.equals(user_id));
+        const existingStaff = staff.listing.call_history.find(entry => entry.user.equals(user_id));
         const formattedSeconds = formatSecondsin(seconds);
 
-        if (!existingUser) {
+        if (!existingStaff) {
             staff.listing.call_history.push({
                 user: user_id,
                 history: [{
@@ -88,9 +95,9 @@ const saveCallHistory = async (req, res, next) => {
                 }],
             });
         } else {
-            const existingHistory = existingUser.history.find(entry => entry.date.toString() === currentTime.toString() && entry.call_type === call_type);
+            const existingHistory = existingStaff.history.find(entry => entry.date.toString() === currentTime.toString() && entry.call_type === call_type);
             if (!existingHistory) {
-                existingUser.history.push({
+                existingStaff.history.push({
                     date: currentTime,
                     call_type,
                     mobile_number: user.mobile_number,
@@ -113,9 +120,21 @@ const saveCallHistory = async (req, res, next) => {
 
             const totalSeconds = calculateTotalSeconds(staff.listing.call_history);
             staff.listing.total_minutes = formatSeconds(totalSeconds);
+
+            user.talk_angel_wallet.total_ballance -= earnings;
+            const userTransaction = {
+                amount: earnings,
+                payment_id: '0',
+                type: 'debited',
+                curent_bellance: user.talk_angel_wallet.total_ballance,
+                date: currentTime,
+            };
+
+            user.talk_angel_wallet.transections.push(userTransaction);
         }
 
         await staff.save();
+        await user.save();
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
