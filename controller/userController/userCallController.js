@@ -28,7 +28,7 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
         }
 
-        if (user.talk_angel_wallet.total_ballance <= 0) {
+        if (user.talk_angel_wallet.total_ballance < 1) {
             return next(new ErrorHandler("Insufficient balance. Please recharge your account.", StatusCodes.NOT_FOUND));
         }
 

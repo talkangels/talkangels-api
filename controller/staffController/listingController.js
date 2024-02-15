@@ -74,10 +74,6 @@ const saveCallHistory = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        if (user.talk_angel_wallet.total_ballance === 0) {
-            return next(new ErrorHandler("Insufficient balance. Please recharge your account.", StatusCodes.INTERNAL_SERVER_ERROR));
-        }
-
         const currentTime = new Date();
         currentTime.setSeconds(currentTime.getSeconds() - seconds);
 
@@ -121,8 +117,8 @@ const saveCallHistory = async (req, res, next) => {
             const totalSeconds = calculateTotalSeconds(staff.listing.call_history);
             staff.listing.total_minutes = formatSeconds(totalSeconds);
 
-            user.talk_angel_wallet.total_ballance = parseFloat((earnings - user.talk_angel_wallet.total_ballance).toFixed(2));
-
+            const user_ballance = user.talk_angel_wallet.total_ballance - earnings;
+            user.talk_angel_wallet.total_ballance = user_ballance.toFixed(2)
             const userTransaction = {
                 amount: earnings,
                 payment_id: '0',
