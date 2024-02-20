@@ -34,6 +34,7 @@ async function getAllAngels(req, res, next) {
             "fcmToken": staffs.fcmToken,
             "country_code": staffs.country_code,
             "total_rating": staffs.total_rating,
+            "total_listing": staffs.listing.total_minutes,
             "reviews": staffs.reviews.reduce((allReviews, review) => allReviews.concat(review.user_reviews), []),
         }))
 
