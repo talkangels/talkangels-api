@@ -7,8 +7,7 @@ const Tokens = require("../models/tokenModel");
 
 const logIn = async (req, res, next) => {
     try {
-        const { name, mobile_number, country_code, fcmToken } = req.body;
-        const deviceIdentifier = req.headers['user-agent'];
+        const { name, user_id, mobile_number, country_code, fcmToken } = req.body;
 
         if (!name || !mobile_number) {
             return next(new ErrorHandler("All fields are required for LogIn", StatusCodes.BAD_REQUEST));
@@ -25,13 +24,11 @@ const logIn = async (req, res, next) => {
             }
 
             const existingToken = await Tokens.findOne({ mobile_number: staff.mobile_number });
-
             if (existingToken) {
                 return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
             }
-
-            const token = generateToken(staff, deviceIdentifier);
-            await Tokens.create({ mobile_number: staff.mobile_number, token, device: deviceIdentifier });
+            const token = generateToken(staff);
+            await Tokens.create({ mobile_number: staff.mobile_number, token });
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
@@ -43,13 +40,11 @@ const logIn = async (req, res, next) => {
             });
         } else if (user) {
             const existingToken = await Tokens.findOne({ mobile_number: user.mobile_number });
-
             if (existingToken) {
                 return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
             }
-
-            const token = generateToken(user, deviceIdentifier);
-            await Tokens.create({ mobile_number: user.mobile_number, token, device: deviceIdentifier });
+            const token = generateToken(user);
+            await Tokens.create({ mobile_number: user.mobile_number, token });
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
@@ -57,13 +52,17 @@ const logIn = async (req, res, next) => {
                 message: `User logged in successfully`,
                 data: user,
                 role: user.role,
-                user_type: "new",
+                user_type: "old",
                 Token: token,
             });
         } else {
+            if (!user_id) {
+                return next(new ErrorHandler("UserId are required for LogIn", StatusCodes.BAD_REQUEST));
+            }
             const newReferralCode = generateRandomReferralCode();
             user = new User({
                 mobile_number,
+                user_id,
                 name,
                 country_code,
                 refer_code: newReferralCode
@@ -75,8 +74,8 @@ const logIn = async (req, res, next) => {
                 await user.save();
             }
 
-            const token = generateToken(user, deviceIdentifier);
-            await Tokens.create({ mobile_number: user.mobile_number, token, device: deviceIdentifier });
+            const token = generateToken(user);
+            await Tokens.create({ mobile_number: user.mobile_number, token });
 
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,

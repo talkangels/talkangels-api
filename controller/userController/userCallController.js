@@ -36,13 +36,14 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             return next(new ErrorHandler("Angel is now busy. Please try again later.", StatusCodes.NOT_FOUND));
         }
 
-        const channelName = generateUniqueChannelName(staff.name, user.name);
+        const channelName = generateUniqueChannelName(staff.user_id, user.name);
         const token = generateAgoraInfo(channelName);
 
         if (staff.fcmToken) {
             const userData = {
                 _id: user._id.toString(),
                 name: user.name,
+                user_id: user.user_id,
                 mobile_number: user.mobile_number.toString(),
                 image: user.image,
                 channelName: channelName,
@@ -129,6 +130,7 @@ const callRejectNotification = async (req, res, next) => {
                 const userData = {
                     _id: user._id.toString(),
                     name: user.name,
+                    user_id: user.user_id,
                     mobile_number: user.mobile_number.toString(),
                     image: user.image,
                     call_type: "reject",

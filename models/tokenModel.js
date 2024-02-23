@@ -8,10 +8,6 @@ const tokenSchema = new mongoose.Schema({
     token: {
         type: String,
         required: true,
-    },
-    device: {
-        type: String,
-        required: true,
     }
 });
 

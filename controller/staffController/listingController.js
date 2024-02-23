@@ -9,7 +9,7 @@ const getCallHistory = async (req, res, next) => {
 
         const staff = await Staff.findById(staffId).populate({
             path: 'listing.call_history.user',
-            select: 'name mobile_number image',
+            select: 'name user_id mobile_number image',
         });
 
         if (!staff) {
@@ -32,6 +32,7 @@ const getCallHistory = async (req, res, next) => {
             return {
                 user: {
                     user_name: entry.user.name,
+                    user_id: entry.user.user_id,
                     mobile_number: entry.user.mobile_number,
                     image: entry.user.image,
                 },
