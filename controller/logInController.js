@@ -3,10 +3,12 @@ const ErrorHandler = require("../middleware/errorHandler");
 const User = require("../models/userModel");
 const { generateToken } = require("../utils/tokenGenerator");
 const Staff = require("../models/staffModel");
+const Tokens = require("../models/tokenModel");
 
 const logIn = async (req, res, next) => {
     try {
         const { name, mobile_number, country_code, fcmToken } = req.body;
+        const deviceIdentifier = req.headers['user-agent'];
 
         if (!name || !mobile_number) {
             return next(new ErrorHandler("All fields are required for LogIn", StatusCodes.BAD_REQUEST));
@@ -21,7 +23,16 @@ const logIn = async (req, res, next) => {
                 staff.active_status = 'Online'
                 await staff.save();
             }
-            const token = generateToken(staff);
+
+            const existingToken = await Tokens.findOne({ mobile_number: staff.mobile_number });
+
+            if (existingToken) {
+                return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
+            }
+
+            const token = generateToken(staff, deviceIdentifier);
+            await Tokens.create({ mobile_number: staff.mobile_number, token, device: deviceIdentifier });
+
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 success: true,
@@ -30,51 +41,52 @@ const logIn = async (req, res, next) => {
                 role: staff.role,
                 Token: token,
             });
-        } else {
-            if (!user) {
-                const newReferralCode = generateRandomReferralCode();
-                user = new User({
-                    mobile_number,
-                    name,
-                    country_code,
-                    refer_code: newReferralCode
-                });
-                await user.save();
+        } else if (user) {
+            const existingToken = await Tokens.findOne({ mobile_number: user.mobile_number });
 
-                if (fcmToken) {
-                    user.fcmToken = fcmToken;
-                    await user.save();
-                }
-                const token = generateToken(user);
-                return res.status(StatusCodes.OK).json({
-                    status: StatusCodes.OK,
-                    success: true,
-                    message: `User logged in successfully`,
-                    data: user,
-                    role: user.role,
-                    user_type: "new",
-                    Token: token,
-                });
-            } else {
-                if (user.status === 0) {
-                    return next(new ErrorHandler(`'${mobile_number}' this number is blocked`, StatusCodes.BAD_REQUEST));
-                }
-                if (fcmToken) {
-                    user.fcmToken = fcmToken;
-                    await user.save();
-                }
-                user.refer_code_status = 1
-                const token = generateToken(user);
-                return res.status(StatusCodes.OK).json({
-                    status: StatusCodes.OK,
-                    success: true,
-                    message: `User logged in successfully`,
-                    data: user,
-                    user_type: "old",
-                    role: user.role,
-                    Token: token,
-                });
+            if (existingToken) {
+                return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
             }
+
+            const token = generateToken(user, deviceIdentifier);
+            await Tokens.create({ mobile_number: user.mobile_number, token, device: deviceIdentifier });
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                success: true,
+                message: `User logged in successfully`,
+                data: user,
+                role: user.role,
+                user_type: "new",
+                Token: token,
+            });
+        } else {
+            const newReferralCode = generateRandomReferralCode();
+            user = new User({
+                mobile_number,
+                name,
+                country_code,
+                refer_code: newReferralCode
+            });
+            await user.save();
+
+            if (fcmToken) {
+                user.fcmToken = fcmToken;
+                await user.save();
+            }
+
+            const token = generateToken(user, deviceIdentifier);
+            await Tokens.create({ mobile_number: user.mobile_number, token, device: deviceIdentifier });
+
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                success: true,
+                message: `User logged in successfully`,
+                data: user,
+                role: user.role,
+                user_type: "new",
+                Token: token,
+            });
         }
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
@@ -94,6 +106,27 @@ const generateRandomReferralCode = () => {
     return referralCode;
 };
 
+const logout = async (req, res, next) => {
+    try {
+        const { mobile_number } = req.body;
+
+        if (!mobile_number) {
+            return next(new ErrorHandler("Mobile number is required for logout", StatusCodes.BAD_REQUEST));
+        }
+
+        await Tokens.findOneAndDelete({ mobile_number });
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: `User logged out successfully`,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
 module.exports = {
-    logIn
+    logIn,
+    logout
 }

@@ -5,13 +5,17 @@ const { getAllAngels, getOneUser, applyReferralCode, getOneAngel, addReport, del
 const { generateAgoraInfoForUser, callRejectNotification } = require("../controller/userController/userCallController")
 const { getAllRecharges, addBallance } = require("../controller/userController/paymantController")
 const { addRating } = require("../controller/userController/ratingController")
-const { logIn } = require("../controller/logInController")
+const { logIn, logout } = require("../controller/logInController")
 
 const router = express.Router()
 
 router
     .route("/auth/login")
     .post(logIn)
+
+router
+    .route("/auth/log-out")
+    .post(logout)
 
 router
     .route("/user/all-angels")
