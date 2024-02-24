@@ -36,14 +36,14 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             return next(new ErrorHandler("Angel is now busy. Please try again later.", StatusCodes.NOT_FOUND));
         }
 
-        const channelName = generateUniqueChannelName(staff.user_id, user.name);
+        const channelName = generateUniqueChannelName(staff.user_name, user.user_name);
         const token = generateAgoraInfo(channelName);
 
         if (staff.fcmToken) {
             const userData = {
                 _id: user._id.toString(),
                 name: user.name,
-                user_id: user.user_id,
+                user_name: user.user_name.toString(),
                 mobile_number: user.mobile_number.toString(),
                 image: user.image,
                 channelName: channelName,
@@ -55,8 +55,8 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             const message = {
                 token: staff.fcmToken,
                 notification: {
-                    title: "incoming call...",
-                    body: "hello",
+                    title: "Incoming call...",
+                    body: user.user_name,
                 },
                 data: userData
             };
@@ -102,7 +102,7 @@ const callRejectNotification = async (req, res, next) => {
 
         if (type === 'user') {
             if (user.fcmToken) {
-                const userData = {
+                const angelData = {
                     _id: staff._id.toString(),
                     name: staff.name,
                     mobile_number: staff.mobile_number.toString(),
@@ -116,7 +116,7 @@ const callRejectNotification = async (req, res, next) => {
                         title: "reject call...",
                         body: "Angel is call rejected",
                     },
-                    data: userData
+                    data: angelData
                 };
                 const response = await admin.messaging().send(message);
                 return res.status(StatusCodes.OK).json({
@@ -130,7 +130,7 @@ const callRejectNotification = async (req, res, next) => {
                 const userData = {
                     _id: user._id.toString(),
                     name: user.name,
-                    user_id: user.user_id,
+                    user_name: user.user_name,
                     mobile_number: user.mobile_number.toString(),
                     image: user.image,
                     call_type: "reject",

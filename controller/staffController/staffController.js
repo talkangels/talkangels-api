@@ -135,5 +135,6 @@ const updateCallStatus = async (req, res, next) => {
 
 module.exports = {
     updateActiveStatus,
-    updateCallStatus
+    updateCallStatus,
+    getAllAngelsSocket
 };

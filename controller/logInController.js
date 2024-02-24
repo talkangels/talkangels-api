@@ -4,10 +4,11 @@ const User = require("../models/userModel");
 const { generateToken } = require("../utils/tokenGenerator");
 const Staff = require("../models/staffModel");
 const Tokens = require("../models/tokenModel");
+const { getAllAngelsSocket } = require("./staffController/staffController");
 
 const logIn = async (req, res, next) => {
     try {
-        const { name, user_id, mobile_number, country_code, fcmToken } = req.body;
+        const { name, user_name, mobile_number, country_code, fcmToken } = req.body;
 
         if (!name || !mobile_number) {
             return next(new ErrorHandler("All fields are required for LogIn", StatusCodes.BAD_REQUEST));
@@ -46,6 +47,12 @@ const logIn = async (req, res, next) => {
             const token = generateToken(user);
             await Tokens.create({ mobile_number: user.mobile_number, token });
 
+            if (fcmToken) {
+                user.fcmToken = fcmToken;
+                user.user_name = user_name;
+                await user.save();
+            }
+
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 success: true,
@@ -56,13 +63,13 @@ const logIn = async (req, res, next) => {
                 Token: token,
             });
         } else {
-            if (!user_id) {
+            if (!user_name) {
                 return next(new ErrorHandler("UserId are required for LogIn", StatusCodes.BAD_REQUEST));
             }
             const newReferralCode = generateRandomReferralCode();
             user = new User({
                 mobile_number,
-                user_id,
+                user_name,
                 name,
                 country_code,
                 refer_code: newReferralCode
@@ -114,6 +121,7 @@ const logout = async (req, res, next) => {
         }
 
         await Tokens.findOneAndDelete({ mobile_number });
+        await getAllAngelsSocket()
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,

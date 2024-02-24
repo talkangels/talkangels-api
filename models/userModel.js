@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    user_id: {
+    user_name: {
         type: String,
         required: true,
         unique: true
@@ -87,4 +87,6 @@ const userSchema = new mongoose.Schema({
     fcmToken: String,
 });
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
