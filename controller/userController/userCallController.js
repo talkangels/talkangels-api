@@ -1,33 +1,10 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('../../serviceAccountKey.json');
 const ErrorHandler = require('../../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const User = require("../../models/userModel");
 const { generateAgoraInfo } = require('../../utils/agoraService');
 const Staff = require("../../models/staffModel");
-
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-});
-
-async function checkTokenValidity(token) {
-    try {
-        const message = {
-            token: token
-        };
-        await admin.messaging().send(message);
-        console.log("FCM token is valid");
-        return true;
-    } catch (error) {
-        if (error.code === 'messaging/invalid-registration-token' || error.code === 'messaging/registration-token-not-registered') {
-            console.log("FCM token is invalid or expired");
-            return false;
-        } else {
-            console.error("Error checking FCM token validity:", error);
-            return null;
-        }
-    }
-}
+const { sendNotification } = require('../../utils/notificationUtils');
 
 const generateAgoraInfoForUser = async (req, res, next) => {
     try {
@@ -55,6 +32,10 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             return next(new ErrorHandler("Angel is now busy. Please try again later.", StatusCodes.NOT_FOUND));
         }
 
+        if (staff.log_out === 0) {
+            return next(new ErrorHandler("Angel is Not Available. Please try again later.", StatusCodes.UNAUTHORIZED));
+        }
+
         const channelName = generateUniqueChannelName(staff.user_name, user.user_name);
         const token = generateAgoraInfo(channelName);
 
@@ -70,16 +51,14 @@ const generateAgoraInfoForUser = async (req, res, next) => {
                 agora_app_id: token.app_id || '',
                 call_type: "calling",
             };
-
-            const message = {
+            const notification = {
                 token: staff.fcmToken,
-                notification: {
-                    title: "Incoming call...",
-                    body: user.user_name,
-                },
+                title: "Incoming call...",
+                body: user.user_name,
                 data: userData
-            };
-            await admin.messaging().send(message);
+            }
+
+            await sendNotification(notification.token, notification.title, notification.body, notification.data)
         }
 
         return res.status(StatusCodes.OK).json({
@@ -120,31 +99,6 @@ const callRejectNotification = async (req, res, next) => {
         }
 
         if (type === 'user') {
-            if (user.fcmToken) {
-                const angelData = {
-                    _id: staff._id.toString(),
-                    name: staff.name,
-                    mobile_number: staff.mobile_number.toString(),
-                    image: staff.image,
-                    call_type: "reject",
-                };
-
-                const message = {
-                    token: user.fcmToken,
-                    notification: {
-                        title: "reject call...",
-                        body: "Angel is call rejected",
-                    },
-                    data: angelData
-                };
-                const response = await admin.messaging().send(message);
-                return res.status(StatusCodes.OK).json({
-                    status: StatusCodes.OK,
-                    success: true,
-                    message: `Call End`,
-                });
-            }
-        } else if (type === 'staff') {
             if (staff.fcmToken) {
                 const userData = {
                     _id: user._id.toString(),
@@ -155,16 +109,39 @@ const callRejectNotification = async (req, res, next) => {
                     call_type: "reject",
                 };
 
-                const message = {
+                const notification = {
                     token: staff.fcmToken,
-                    notification: {
-                        title: "reject call...",
-                        body: "User is call rejected",
-                    },
+                    title: "reject call...",
+                    body: "User is call rejected",
                     data: userData
-                };
-                const response = await admin.messaging().send(message);
+                }
 
+                await sendNotification(notification.token, notification.title, notification.body, notification.data)
+                return res.status(StatusCodes.OK).json({
+                    status: StatusCodes.OK,
+                    success: true,
+                    message: `Call End`,
+                });
+            }
+        } else if (type === 'staff') {
+            if (user.fcmToken) {
+
+                const angelData = {
+                    _id: staff._id.toString(),
+                    name: staff.name,
+                    mobile_number: staff.mobile_number.toString(),
+                    image: staff.image,
+                    call_type: "reject",
+                };
+
+                const notification = {
+                    token: user.fcmToken,
+                    title: "reject call...",
+                    body: "Angel is call rejected",
+                    data: angelData
+                }
+
+                await sendNotification(notification.token, notification.title, notification.body, notification.data)
                 return res.status(StatusCodes.OK).json({
                     status: StatusCodes.OK,
                     success: true,
@@ -174,7 +151,6 @@ const callRejectNotification = async (req, res, next) => {
         } else {
             return next(new ErrorHandler('server error', StatusCodes.INTERNAL_SERVER_ERROR));
         }
-
     } catch (error) {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
@@ -183,5 +159,4 @@ const callRejectNotification = async (req, res, next) => {
 module.exports = {
     generateAgoraInfoForUser,
     callRejectNotification,
-    checkTokenValidity
 };

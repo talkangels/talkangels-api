@@ -7,38 +7,40 @@ const { getAllWithdrawRequests, updateWithdrawRequestStatus, updateChargesForAll
 const { getTotalRatings } = require("../controller/userController/ratingController")
 const { getAllReport, updateReportStatus } = require("../controller/adminController/reportController")
 const FileUplaodToFirebase = require("../middleware/multerConfig");
+const { sendNotifictionUser } = require("../controller/adminController/notificaton")
 
 const router = express.Router()
 
 router.post("/auth/admin/register", registerAdmin)
 router.post("/auth/admin/login", loginAdmin)
+router.post("/admin/send-notification/user", authenticateUser, authorizePermission("admin"), sendNotifictionUser)
+
 router.get("/admin/detail/:id", authenticateUser, authorizePermission("admin"), getAdminDetail)
 router.get("/admin/all-user", authenticateUser, authorizePermission("admin"), getAllUser)
 router.put("/admin/update-user/:id", authenticateUser, authorizePermission("admin"), updateUserStatus)
 router.post("/admin/update-charges", authenticateUser, authorizePermission("admin"), updateChargesForAllStaff)
-router.get("/admin/most-rated",authenticateUser, authorizePermission("admin"), getTopRatedStaff)
+router.get("/admin/most-rated", authenticateUser, authorizePermission("admin"), getTopRatedStaff)
 
 // Report admin routes...
-router.get("/admin/all-report",authenticateUser, authorizePermission("admin"), getAllReport)
-router.put("/admin/update-report-request/:reportId",authenticateUser, authorizePermission("admin"), updateReportStatus)
+router.get("/admin/all-report", authenticateUser, authorizePermission("admin"), getAllReport)
+router.put("/admin/update-report-request/:reportId", authenticateUser, authorizePermission("admin"), updateReportStatus)
 
 // staff admin routes...
-router.post("/admin/add-staff",authenticateUser, authorizePermission("admin"), FileUplaodToFirebase.uploadMulter.single("image"), addStaff)
-router.get("/admin/all-staff",authenticateUser, authorizePermission("admin"), getAllStaff)
-router.get("/admin/one-staff/:id",authenticateUser, authorizePermission("admin"), getOneStaff)
-router.put("/admin/update-staff/:id",authenticateUser, authorizePermission("admin"), FileUplaodToFirebase.uploadMulter.single("image"), updateStaff)
-router.delete("/admin/delete-staff/:id",authenticateUser, authorizePermission("admin"), deleteStaff)
-router.get("/admin/all-rating",authenticateUser, authorizePermission("admin"), getTotalRatings)
+router.post("/admin/add-staff", authenticateUser, authorizePermission("admin"), FileUplaodToFirebase.uploadMulter.single("image"), addStaff)
+router.get("/admin/all-staff", authenticateUser, authorizePermission("admin"), getAllStaff)
+router.get("/admin/one-staff/:id", authenticateUser, authorizePermission("admin"), getOneStaff)
+router.delete("/admin/delete-staff/:id", authenticateUser, authorizePermission("admin"), deleteStaff)
+router.get("/admin/all-rating", authenticateUser, authorizePermission("admin"), getTotalRatings)
 
 // recharges admin routes...
-router.post("/admin/add-recharge",authenticateUser, authorizePermission("admin"), addRecharges)
-router.get("/admin/all-recharge",authenticateUser, authorizePermission("admin"), getAllRecharges)
-router.get("/admin/one-recharge/:id",authenticateUser, authorizePermission("admin"), getOneRecharges)
-router.put("/admin/update-recharge/:id",authenticateUser, authorizePermission("admin"), updateRecharge)
-router.delete("/admin/delete-recharge/:id",authenticateUser, authorizePermission("admin"), deleteRecharge)
+router.post("/admin/add-recharge", authenticateUser, authorizePermission("admin"), addRecharges)
+router.get("/admin/all-recharge", authenticateUser, authorizePermission("admin"), getAllRecharges)
+router.get("/admin/one-recharge/:id", authenticateUser, authorizePermission("admin"), getOneRecharges)
+router.put("/admin/update-recharge/:id", authenticateUser, authorizePermission("admin"), updateRecharge)
+router.delete("/admin/delete-recharge/:id", authenticateUser, authorizePermission("admin"), deleteRecharge)
 
 // withdraw request admin routes...
-router.get("/admin/all-withdraw-request",authenticateUser, authorizePermission("admin"), getAllWithdrawRequests)
-router.put("/admin/update-withdraw-request",authenticateUser, authorizePermission("admin"), updateWithdrawRequestStatus)
+router.get("/admin/all-withdraw-request", authenticateUser, authorizePermission("admin"), getAllWithdrawRequests)
+router.put("/admin/update-withdraw-request", authenticateUser, authorizePermission("admin"), updateWithdrawRequestStatus)
 
 module.exports = router

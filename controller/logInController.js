@@ -3,10 +3,9 @@ const ErrorHandler = require("../middleware/errorHandler");
 const User = require("../models/userModel");
 const { generateToken } = require("../utils/tokenGenerator");
 const Staff = require("../models/staffModel");
-const Tokens = require("../models/tokenModel");
 const { getAllAngelsSocket } = require("./staffController/staffController");
 const { generateRandomUsername, generateRandomReferralCode } = require("../utils/helper");
-const { checkTokenValidity } = require("./userController/userCallController");
+const { checkTokenValidity } = require("../utils/notificationUtils");
 
 const logIn = async (req, res, next) => {
     try {
@@ -49,7 +48,7 @@ const logIn = async (req, res, next) => {
                 role: staff.role,
                 Token: token,
             });
-            
+
         } else if (user) {
             let isTokenValid = true;
             if (user.fcmToken) {

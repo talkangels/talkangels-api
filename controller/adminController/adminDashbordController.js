@@ -13,7 +13,7 @@ const getAllWithdrawRequests = async (req, res, next) => {
         const withdrawRequests = await Withdraws.find().populate({
             path: 'staff',
             model: 'Staff',
-            select: 'name mobile_number',
+            select: 'name mobile_number image',
         });
 
         const DateRequests = [].concat(
@@ -28,6 +28,7 @@ const getAllWithdrawRequests = async (req, res, next) => {
                     _id: req._id,
                     staff_name: requests.staff.name,
                     staff_number: requests.staff.mobile_number,
+                    staff_image: requests.staff.image,
                     request_amount: req.request_amount,
                     current_amount: req.current_amount,
                     date: req.date,
@@ -158,7 +159,7 @@ const getTopRatedStaff = async (req, res, next) => {
             },
             {
                 $group: {
-                    _id: { staff_id: "$_id", staff_name: "$name" },
+                    _id: { staff_id: "$_id", staff_name: "$name", image: "$image" },
                     mobile_number: { $first: "$mobile_number" },
                     username: { $first: "$user_name" },
                     rating: { $max: "$reviews.user_reviews.rating" },
@@ -174,6 +175,7 @@ const getTopRatedStaff = async (req, res, next) => {
                 $project: {
                     _id: "$_id.staff_id",
                     staff_name: "$_id.staff_name",
+                    image: "$_id.image",
                     mobile_number: 1,
                     username: 1,
                     rating: 1,

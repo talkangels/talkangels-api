@@ -13,7 +13,7 @@ router.post("/auth/login", logIn)
 router.post("/auth/log-out", logout)
 
 router.get("/user/all-angels", getAllAngels)
-router.post("/user/call", authenticateUser, authorizePermission("user"), generateAgoraInfoForUser)
+router.post("/user/call",  generateAgoraInfoForUser)
 router.post("/call-reject", authenticateUser, callRejectNotification)
 
 router.get("/user/detail/:id", authenticateUser, authorizePermission("user"), getOneUser)
