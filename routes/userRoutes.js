@@ -19,7 +19,7 @@ router
 
 router
     .route("/user/all-angels")
-    .get(authenticateUser, authorizePermission("user"), getAllAngels)
+    .get( getAllAngels)
 
 router
     .route("/user/detail/:id")
@@ -27,7 +27,7 @@ router
 
 router
     .route("/user/call")
-    .post(authenticateUser, authorizePermission("user"), generateAgoraInfoForUser)
+    .post( generateAgoraInfoForUser)
 
 router
     .route("/call-reject")

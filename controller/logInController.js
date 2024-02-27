@@ -5,10 +5,11 @@ const { generateToken } = require("../utils/tokenGenerator");
 const Staff = require("../models/staffModel");
 const Tokens = require("../models/tokenModel");
 const { getAllAngelsSocket } = require("./staffController/staffController");
+const { generateRandomUsername, generateRandomReferralCode } = require("../utils/helper");
 
 const logIn = async (req, res, next) => {
     try {
-        const { name, user_name, mobile_number, country_code, fcmToken } = req.body;
+        const { name, mobile_number, country_code, fcmToken } = req.body;
 
         if (!name || !mobile_number) {
             return next(new ErrorHandler("All fields are required for LogIn", StatusCodes.BAD_REQUEST));
@@ -18,19 +19,19 @@ const logIn = async (req, res, next) => {
         let user = await User.findOne({ mobile_number });
 
         if (staff) {
+            if (staff.log_out === 1) {
+                return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
+            }
+
             if (fcmToken) {
                 staff.fcmToken = fcmToken;
                 staff.active_status = 'Online'
                 await staff.save();
             }
+            staff.log_out = 1;
+            await staff.save();
 
-            const existingToken = await Tokens.findOne({ mobile_number: staff.mobile_number });
-            if (existingToken) {
-                return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
-            }
             const token = generateToken(staff);
-            await Tokens.create({ mobile_number: staff.mobile_number, token });
-
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 success: true,
@@ -40,19 +41,19 @@ const logIn = async (req, res, next) => {
                 Token: token,
             });
         } else if (user) {
-            const existingToken = await Tokens.findOne({ mobile_number: user.mobile_number });
-            if (existingToken) {
+            if (user.log_out === 1) {
                 return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
             }
-            const token = generateToken(user);
-            await Tokens.create({ mobile_number: user.mobile_number, token });
 
             if (fcmToken) {
                 user.fcmToken = fcmToken;
-                user.user_name = user_name;
                 await user.save();
             }
 
+            user.log_out = 1;
+            await user.save();
+
+            const token = generateToken(user);
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 success: true,
@@ -63,10 +64,9 @@ const logIn = async (req, res, next) => {
                 Token: token,
             });
         } else {
-            if (!user_name) {
-                return next(new ErrorHandler("UserId are required for LogIn", StatusCodes.BAD_REQUEST));
-            }
+            const user_name = generateRandomUsername();
             const newReferralCode = generateRandomReferralCode();
+
             user = new User({
                 mobile_number,
                 user_name,
@@ -82,8 +82,6 @@ const logIn = async (req, res, next) => {
             }
 
             const token = generateToken(user);
-            await Tokens.create({ mobile_number: user.mobile_number, token });
-
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 success: true,
@@ -99,19 +97,6 @@ const logIn = async (req, res, next) => {
     }
 };
 
-const generateRandomReferralCode = () => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const codeLength = 8;
-    let referralCode = '';
-
-    for (let i = 0; i < codeLength; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        referralCode += characters.charAt(randomIndex);
-    }
-
-    return referralCode;
-};
-
 const logout = async (req, res, next) => {
     try {
         const { mobile_number } = req.body;
@@ -120,8 +105,22 @@ const logout = async (req, res, next) => {
             return next(new ErrorHandler("Mobile number is required for logout", StatusCodes.BAD_REQUEST));
         }
 
-        await Tokens.findOneAndDelete({ mobile_number });
-        await getAllAngelsSocket()
+        const staff = await Staff.findOne({ mobile_number });
+        const user = await User.findOne({ mobile_number });
+
+        if (staff) {
+            staff.log_out = 0;
+            staff.active_status = 'Offline';
+            staff.call_status = 'NotAvailable';
+            await staff.save();
+        } else if (user) {
+            user.log_out = 0;
+            await user.save();
+        } else {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
+        await getAllAngelsSocket();
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,

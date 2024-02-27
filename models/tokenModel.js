@@ -8,6 +8,19 @@ const tokenSchema = new mongoose.Schema({
     token: {
         type: String,
         required: true,
+    },
+    fcm_token: {
+        type: String,
+        required: true,
+    },
+    log_out: {
+        type: Number,
+        required: true,
+        enum: [
+            0,
+            1,
+        ],
+        default: 0
     }
 });
 

@@ -176,6 +176,10 @@ const deleteStaff = async (req, res, next) => {
             return next(new ErrorHandler(`staff not found with id ${staffId}`, StatusCodes.NOT_FOUND));
         }
 
+        if (existingStaff.image) {
+            await FileUplaodToFirebase.deleteFileFromFirebase(existingStaff.image);
+        }
+
         const deletedStaff = await Staff.findByIdAndDelete(staffId);
 
         return res.status(StatusCodes.OK).json({

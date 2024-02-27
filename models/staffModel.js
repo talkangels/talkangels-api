@@ -59,6 +59,7 @@ const staffSchema = new mongoose.Schema({
         enum: [
             "Available",
             "Busy",
+            "NotAvailable"
         ],
         default: "Available"
     },
@@ -160,6 +161,15 @@ const staffSchema = new mongoose.Schema({
 
         },
     ],
+    log_out: {
+        type: Number,
+        required: true,
+        enum: [
+            0,
+            1,
+        ],
+        default: 0
+    },
     fcmToken: String,
     updated_at: {
         type: Date,

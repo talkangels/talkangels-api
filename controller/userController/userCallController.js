@@ -1,14 +1,35 @@
 const admin = require('firebase-admin');
+const serviceAccount = require('../../serviceAccountKey.json');
 const ErrorHandler = require('../../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const User = require("../../models/userModel");
 const { generateAgoraInfo } = require('../../utils/agoraService');
-const serviceAccount = require('../../serviceAccountKey.json');
 const Staff = require("../../models/staffModel");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
 });
+
+
+async function checkTokenValidity(token) {
+    try {
+        const message = {
+            token: token
+        };
+        await admin.messaging().send(message);
+        console.log("FCM token is valid");
+        return true;
+    } catch (error) {
+        if (error.code === 'messaging/invalid-registration-token' || error.code === 'messaging/registration-token-not-registered') {
+            console.log("FCM token is invalid or expired");
+            return false;
+        } else {
+            console.error("Error checking FCM token validity:", error);
+            // Handle other errors
+            return null; // Indicate unknown validity
+        }
+    }
+}
 
 const generateAgoraInfoForUser = async (req, res, next) => {
     try {
@@ -41,14 +62,14 @@ const generateAgoraInfoForUser = async (req, res, next) => {
 
         if (staff.fcmToken) {
             const userData = {
-                _id: user._id.toString(),
-                name: user.name,
-                user_name: user.user_name.toString(),
-                mobile_number: user.mobile_number.toString(),
-                image: user.image,
-                channelName: channelName,
-                agora_token: token.agora_token,
-                agora_app_id: token.app_id,
+                _id: user._id.toString() || '',
+                name: user.name || '',
+                user_name: user.user_name.toString() || '',
+                mobile_number: user.mobile_number.toString() || '',
+                image: user.image || '',
+                channelName: channelName || '',
+                agora_token: token.agora_token || '',
+                agora_app_id: token.app_id || '',
                 call_type: "calling",
             };
 
@@ -60,7 +81,7 @@ const generateAgoraInfoForUser = async (req, res, next) => {
                 },
                 data: userData
             };
-            const response = await admin.messaging().send(message);
+            await admin.messaging().send(message);
         }
 
         return res.status(StatusCodes.OK).json({

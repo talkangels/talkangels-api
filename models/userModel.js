@@ -84,6 +84,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'user'
     },
+    log_out: {
+        type: Number,
+        required: true,
+        enum: [
+            0,
+            1,
+        ],
+        default: 1
+    },
     fcmToken: String,
 });
 
