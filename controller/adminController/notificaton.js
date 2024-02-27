@@ -7,7 +7,6 @@ const { checkTokenValidity, sendNotification } = require("../../utils/notificati
 const sendNotifictionUser = async (req, res, next) => {
     try {
         const { title, body, userIds, angel_id } = req.body;
-
         if (!title || !body) {
             return next(new ErrorHandler("Title and body are required for notifications", StatusCodes.BAD_REQUEST));
         }

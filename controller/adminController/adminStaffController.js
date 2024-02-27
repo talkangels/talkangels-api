@@ -114,11 +114,10 @@ const updateStaff = async (req, res, next) => {
         const {
             user_name,
             name,
-            mobile_number,
             gender,
             bio,
-            Language,
-            Age,
+            language,
+            age,
             status,
         } = req.body;
         const newImage = req.file;
@@ -126,11 +125,10 @@ const updateStaff = async (req, res, next) => {
         const updatedStaffData = {
             user_name,
             name,
-            mobile_number,
             gender,
             bio,
-            Language,
-            Age,
+            language,
+            age,
             status,
         };
 
