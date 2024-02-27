@@ -6,6 +6,7 @@ const Staff = require("../models/staffModel");
 const Tokens = require("../models/tokenModel");
 const { getAllAngelsSocket } = require("./staffController/staffController");
 const { generateRandomUsername, generateRandomReferralCode } = require("../utils/helper");
+const { checkTokenValidity } = require("./userController/userCallController");
 
 const logIn = async (req, res, next) => {
     try {
@@ -19,13 +20,21 @@ const logIn = async (req, res, next) => {
         let user = await User.findOne({ mobile_number });
 
         if (staff) {
-            if (staff.log_out === 1) {
-                return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
+            let isTokenValid = true;
+            if (staff.fcmToken) {
+                isTokenValid = await checkTokenValidity(staff.fcmToken);
+            }
+
+            if (isTokenValid === true) {
+                if (staff.log_out === 1) {
+                    return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
+                }
             }
 
             if (fcmToken) {
                 staff.fcmToken = fcmToken;
                 staff.active_status = 'Online'
+                staff.call_status = 'Available'
                 await staff.save();
             }
             staff.log_out = 1;
@@ -40,9 +49,17 @@ const logIn = async (req, res, next) => {
                 role: staff.role,
                 Token: token,
             });
+            
         } else if (user) {
-            if (user.log_out === 1) {
-                return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
+            let isTokenValid = true;
+            if (user.fcmToken) {
+                isTokenValid = await checkTokenValidity(user.fcmToken);
+            }
+
+            if (isTokenValid === true) {
+                if (user.log_out === 1) {
+                    return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
+                }
             }
 
             if (fcmToken) {

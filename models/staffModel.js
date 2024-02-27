@@ -61,7 +61,7 @@ const staffSchema = new mongoose.Schema({
             "Busy",
             "NotAvailable"
         ],
-        default: "Available"
+        default: "NotAvailable"
     },
     status: {
         type: Number,

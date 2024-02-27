@@ -9,57 +9,20 @@ const { logIn, logout } = require("../controller/logInController")
 
 const router = express.Router()
 
-router
-    .route("/auth/login")
-    .post(logIn)
+router.post("/auth/login", logIn)
+router.post("/auth/log-out", logout)
 
-router
-    .route("/auth/log-out")
-    .post(logout)
+router.get("/user/all-angels", getAllAngels)
+router.post("/user/call", authenticateUser, authorizePermission("user"), generateAgoraInfoForUser)
+router.post("/call-reject", authenticateUser, callRejectNotification)
 
-router
-    .route("/user/all-angels")
-    .get( getAllAngels)
-
-router
-    .route("/user/detail/:id")
-    .get(authenticateUser, authorizePermission("user"), getOneUser)
-
-router
-    .route("/user/call")
-    .post( generateAgoraInfoForUser)
-
-router
-    .route("/call-reject")
-    .post(callRejectNotification)
-
-
-router
-    .route("/user/all-recharge")
-    .get(authenticateUser, authorizePermission("user"), getAllRecharges)
-
-router
-    .route("/user/add-ballence")
-    .post(authenticateUser, authorizePermission("user"), addBallance)
-
-router
-    .route("/user/apply-refer-code")
-    .post(authenticateUser, authorizePermission("user"), applyReferralCode)
-
-router
-    .route("/user/add-rating")
-    .post(authenticateUser, authorizePermission("user"), addRating)
-
-router
-    .route("/user/angel-detail/:id")
-    .get(authenticateUser, authorizePermission("user"), getOneAngel)
-
-router
-    .route("/user/add-report")
-    .post(authenticateUser, authorizePermission("user"), addReport)
-
-router
-    .route("/user/delete/:id")
-    .delete(authenticateUser, authorizePermission("user"), deleteUser)
+router.get("/user/detail/:id", authenticateUser, authorizePermission("user"), getOneUser)
+router.get("/user/all-recharge", authenticateUser, authorizePermission("user"), getAllRecharges)
+router.post("/user/add-ballence", authenticateUser, authorizePermission("user"), addBallance)
+router.post("/user/apply-refer-code", authenticateUser, authorizePermission("user"), applyReferralCode)
+router.post("/user/add-rating", authenticateUser, authorizePermission("user"), addRating)
+router.get("/user/angel-detail/:id", authenticateUser, authorizePermission("user"), getOneAngel)
+router.post("/user/add-report", authenticateUser, authorizePermission("user"), addReport)
+router.delete("/user/delete/:id", authenticateUser, authorizePermission("user"), deleteUser)
 
 module.exports = router

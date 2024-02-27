@@ -10,7 +10,6 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
 });
 
-
 async function checkTokenValidity(token) {
     try {
         const message = {
@@ -25,8 +24,7 @@ async function checkTokenValidity(token) {
             return false;
         } else {
             console.error("Error checking FCM token validity:", error);
-            // Handle other errors
-            return null; // Indicate unknown validity
+            return null;
         }
     }
 }
@@ -184,5 +182,6 @@ const callRejectNotification = async (req, res, next) => {
 
 module.exports = {
     generateAgoraInfoForUser,
-    callRejectNotification
+    callRejectNotification,
+    checkTokenValidity
 };

@@ -7,32 +7,13 @@ const { getOneStaff } = require("../controller/adminController/adminStaffControl
 const { addReport } = require("../controller/userController/userController")
 const router = express.Router()
 
-router
-    .route("/staff/update-active-status/:staffId")
-    .put(authenticateUser, authorizePermission("staff"), updateActiveStatus)
+router.post("/staff/save-call-history", authenticateUser, saveCallHistory)
+router.put("/user/update-call-status/:staffId", authenticateUser, updateCallStatus)
 
-router
-    .route("/staff/save-call-history")
-    .post(authenticateUser, saveCallHistory)
-
-router
-    .route("/staff/detail/:id")
-    .get(authenticateUser, authorizePermission("staff"), getOneStaff)
-
-router
-    .route("/staff/call-history/:staffId")
-    .get(authenticateUser, authorizePermission("staff"), getCallHistory)
-
-router
-    .route("/staff/send-withdraw-request")
-    .post(authenticateUser, authorizePermission("staff"), sendWithdrawRequest)
-
-router
-    .route("/staff/add-report")
-    .post(authenticateUser, authorizePermission("staff"), addReport)
-
-router
-    .route("/user/update-call-status/:staffId")
-    .put(authenticateUser, updateCallStatus)
+router.put("/staff/update-active-status/:staffId", authenticateUser, authorizePermission("staff"), updateActiveStatus)
+router.get("/staff/detail/:id", authenticateUser, authorizePermission("staff"), getOneStaff)
+router.get("/staff/call-history/:staffId", authenticateUser, authorizePermission("staff"), getCallHistory)
+router.post("/staff/send-withdraw-request", authenticateUser, authorizePermission("staff"), sendWithdrawRequest)
+router.post("/staff/add-report", authenticateUser, authorizePermission("staff"), addReport)
 
 module.exports = router
