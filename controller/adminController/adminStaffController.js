@@ -54,7 +54,7 @@ const addStaff = async (req, res, next) => {
 const getAllStaff = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page_no) || 1;
-        const perPage = parseInt(req.query.items_per_page) || 10;
+        const perPage = parseInt(req.query.items_per_page) || 100;
 
         const { search_text } = req.query;
 

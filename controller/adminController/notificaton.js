@@ -6,8 +6,8 @@ const { checkTokenValidity, sendNotification } = require("../../utils/notificati
 
 const sendNotifictionUser = async (req, res, next) => {
     try {
-        const { title, body, userIds, angel_id } = req.body;
-        if (!title || !body) {
+        const { title, body, userIds, angel_id, type } = req.body;
+        if (!title || !body || !type) {
             return next(new ErrorHandler("Title and body are required for notifications", StatusCodes.BAD_REQUEST));
         }
 
@@ -23,7 +23,7 @@ const sendNotifictionUser = async (req, res, next) => {
             if (user.fcmToken) {
                 const isTokenValid = await checkTokenValidity(user.fcmToken);
                 if (isTokenValid) {
-                    const data = { angel_id: angel_id || '' };
+                    const data = { angel_id: angel_id || '', type: type, };
                     await sendNotification(user.fcmToken, title, body, data);
                     notifications.push({ user: user._id, status: "sent" });
                 } else {

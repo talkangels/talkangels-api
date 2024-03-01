@@ -43,8 +43,8 @@ const staffSchema = new mongoose.Schema({
         default: '0'
     },
     age: {
-        type: String,
-        default: '0'
+        type: Number,
+        default: 0
     },
     active_status: {
         type: String,

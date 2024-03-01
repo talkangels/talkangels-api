@@ -36,4 +36,6 @@ const withdrowSchema = new mongoose.Schema({
     ],
 });
 
-module.exports = mongoose.model('Withdrows', withdrowSchema);
+const Withdrows = mongoose.model('Withdrows', withdrowSchema);
+
+module.exports = Withdrows;
