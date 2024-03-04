@@ -8,7 +8,7 @@ const sendNotifictionUser = async (req, res, next) => {
     try {
         const { title, body, userIds, angel_id, type } = req.body;
         if (!title || !body || !type) {
-            return next(new ErrorHandler("Title and body are required for notifications", StatusCodes.BAD_REQUEST));
+            return next(new ErrorHandler("Title, Body and Type are required for notifications", StatusCodes.BAD_REQUEST));
         }
 
         let users;
