@@ -62,6 +62,7 @@ const loginAdmin = async (req, res, next) => {
             const token = generateToken(user);
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
+                success: true,
                 message: `${user.role} logged in successfully`,
                 user: userWithoutPassword,
                 charges: staffs ? staffs[0].charges : 0,
@@ -206,13 +207,17 @@ const forgotPassword = async (req, res, next) => {
         if (success) {
             admin.resetToken = resetToken;
             await admin.save();
-            return res.status(200).json({ success: true, message: 'Forgot password email sent successfully' });
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                success: true,
+                message: "Forgot password email sent successfully",
+            });
         } else {
-            return res.status(500).json({ success: false, message: 'Failed to send forgot password email' });
+            return res.status(500).json({ status: 500, success: false, message: 'Failed to send forgot password email' });
         }
 
     } catch (error) {
-        return res.status(500).json({ success: false, message: 'Failed to send forgot password email' });
+        return res.status(500).json({ status: 500, success: false, message: 'Failed to send forgot password email' });
     }
 };
 
@@ -232,9 +237,9 @@ const resetPassword = async (req, res, next) => {
 
         await admin.save();
 
-        return res.status(200).json({ success: true, message: 'Password reset successfully' });
+        return res.status(200).json({ status: 200, success: true, message: 'Password reset successfully' });
     } catch (error) {
-        return res.status(500).json({ success: false, message: 'Plese resend mail to forgot password' });
+        return res.status(500).json({ status: 500, success: false, message: 'Plese resend mail to forgot password' });
 
     }
 };
