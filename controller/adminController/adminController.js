@@ -198,7 +198,7 @@ const forgotPassword = async (req, res, next) => {
         }
 
         const resetToken = Math.random().toString(36).substr(2, 15);
-        const resetLink = `https://www.talkangels.com/reset-password?token=${resetToken}`;
+        const resetLink = `https://www.talkangels.com/admin/reset-password?token=${resetToken}`;
         const htmlFormat = fs.readFileSync(path.join(__dirname, '/forgot_password_template.html'), 'utf-8');
         const formattedHtml = htmlFormat.replace('{{resetLink}}', resetLink);
 
@@ -224,10 +224,16 @@ const forgotPassword = async (req, res, next) => {
 const resetPassword = async (req, res, next) => {
     try {
         const { token, newPassword } = req.body;
-        const admin = await Admin.findOne({ resetToken: token });
 
+        if (!newPassword) {
+            return res.status(400).json({ success: false, message: 'New password is required' });
+        }
+        if (!token) {
+            return res.status(400).json({ success: false, message: 'Token is required' });
+        }
+        const admin = await Admin.findOne({ resetToken: token });
         if (!admin) {
-            return res.status(400).json({ success: false, message: 'Invalid or expired, resend mail' });
+            return res.status(400).json({ success: false, message: 'Resend the email if the token is invalid or expired' });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -239,7 +245,7 @@ const resetPassword = async (req, res, next) => {
 
         return res.status(200).json({ status: 200, success: true, message: 'Password reset successfully' });
     } catch (error) {
-        return res.status(500).json({ status: 500, success: false, message: 'Plese resend mail to forgot password' });
+        return res.status(500).json({ status: 500, success: false, message: 'Please resend the forgotten password email' });
 
     }
 };
