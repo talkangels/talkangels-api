@@ -23,4 +23,6 @@ const rechargeSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Recharges', rechargeSchema);
+const Recharges = mongoose.model('Recharges', rechargeSchema);
+
+module.exports = Recharges;

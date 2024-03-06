@@ -28,7 +28,11 @@ const adminSchema = new mongoose.Schema({
         type: String,
         default: 'admin'
     },
+    resetToken: String,
+    resetTokenExpiry: Date,
     fcmToken: String,
 });
 
-module.exports = mongoose.model('Admin', adminSchema);
+const Admin = mongoose.model('Admin', adminSchema);
+
+module.exports = Admin;

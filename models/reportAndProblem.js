@@ -17,12 +17,14 @@ const reportSchema = new mongoose.Schema({
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
+        ref: 'User',
     },
     staff: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Staff', 
+        ref: 'Staff',
     },
 });
 
-module.exports = mongoose.model('reports', reportSchema);
+const Reports = mongoose.model('reports', reportSchema);
+
+module.exports = Reports;

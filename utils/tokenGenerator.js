@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const secret_key = "ASkdcbgijhdlosdhflsnvsndlffjhn";
 
-function generateToken(user, deviceIdentifier) {
+function generateToken(user) {
   const payload = {
     name: user.name,
     mobile_number: user.mobile_number,

@@ -26,10 +26,6 @@ app.use('/api/v1', admin);
 app.use('/api/v1', user);
 app.use('/api/v1', staff);
 
-// app.get('/', (req, res) => {
-//   res.send('Hey, this is my API running 🥳');
-// });
-
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });

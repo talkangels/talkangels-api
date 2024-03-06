@@ -1,4 +1,3 @@
-const admin = require('firebase-admin');
 const ErrorHandler = require('../../middleware/errorHandler');
 const { StatusCodes } = require('http-status-codes');
 const User = require("../../models/userModel");
