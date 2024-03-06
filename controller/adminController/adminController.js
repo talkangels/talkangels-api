@@ -203,7 +203,7 @@ const forgotPassword = async (req, res, next) => {
 
         const success = await sendForgotPasswordEmail({ recipientEmail: email, subject: 'Forgot Password', htmlFormat: formattedHtml });
 
-        if (success) { 
+        if (success) {
             admin.resetToken = resetToken;
             await admin.save();
             return res.status(200).json({ success: true, message: 'Forgot password email sent successfully' });
@@ -212,7 +212,6 @@ const forgotPassword = async (req, res, next) => {
         }
 
     } catch (error) {
-        console.error('Error sending forgot password email:', error);
         return res.status(500).json({ success: false, message: 'Failed to send forgot password email' });
     }
 };
@@ -220,10 +219,10 @@ const forgotPassword = async (req, res, next) => {
 const resetPassword = async (req, res, next) => {
     try {
         const { token, newPassword } = req.body;
-        const admin = await Admin.findOne({ resetToken: token, resetTokenExpiry: { $gt: Date.now() } });
+        const admin = await Admin.findOne({ resetToken: token });
 
         if (!admin) {
-            return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+            return res.status(400).json({ success: false, message: 'Invalid or expired, resend mail' });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -235,10 +234,10 @@ const resetPassword = async (req, res, next) => {
 
         return res.status(200).json({ success: true, message: 'Password reset successfully' });
     } catch (error) {
-        next(error);
+        return res.status(500).json({ success: false, message: 'Plese resend mail to forgot password' });
+
     }
 };
-
 
 module.exports = {
     registerAdmin,

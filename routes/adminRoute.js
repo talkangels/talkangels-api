@@ -13,7 +13,7 @@ const { addWePage } = require("../controller/adminController/webPageController")
 const router = express.Router()
 
 // Admin
-router.post("/auth/admin/register", registerAdmin)
+router.post("/auth/admin/register", authenticateUser, authorizePermission("admin"), registerAdmin)
 router.post("/auth/admin/login", loginAdmin)
 router.post("/admin/send-notification/user", authenticateUser, authorizePermission("admin"), sendNotifictionUser)
 router.post("/admin/forgot-password", forgotPassword)
