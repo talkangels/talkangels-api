@@ -3,6 +3,7 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 
 const errorMiddleware = require('./errors/error');
 dotenv.config({ path: 'config/config.env' });
@@ -27,7 +28,7 @@ app.use('/api/v1', user);
 app.use('/api/v1', staff);
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(path.join(__dirname, 'html', 'index.html'));
 });
 
 // Error

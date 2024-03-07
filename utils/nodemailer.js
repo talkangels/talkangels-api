@@ -1,17 +1,18 @@
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'talkangels5524@gmail.com',
-        pass: 'wacf jcct mqvj qzdw'
+        user: process.env.E_MAIL,
+        pass: process.env.SMT_PASSWORD
     }
 });
 
 const sendForgotPasswordEmail = async ({ recipientEmail, subject, htmlFormat }) => {
     try {
         const mailOptions = {
-            from: 'talkangels5524@gmail.com',
+            from: process.env.E_MAIL,
             to: recipientEmail,
             subject: subject,
             html: htmlFormat
@@ -20,7 +21,7 @@ const sendForgotPasswordEmail = async ({ recipientEmail, subject, htmlFormat }) 
         await transporter.sendMail(mailOptions);
         return true;
     } catch (error) {
-        throw new Error('Failed to send forgot password email');
+        throw new Error(error);
     }
 };
 

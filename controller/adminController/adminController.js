@@ -197,13 +197,12 @@ const forgotPassword = async (req, res, next) => {
             return res.status(404).json({ success: false, message: 'Admin not found with this email' });
         }
 
-        const resetToken = Math.random().toString(36).substr(2, 15);
+        const resetToken = Math.random().toString(36).substr(2, 30);
         const resetLink = `https://www.talkangels.com/admin/reset-password?token=${resetToken}`;
         const htmlFormat = fs.readFileSync(path.join(__dirname, '/forgot_password_template.html'), 'utf-8');
         const formattedHtml = htmlFormat.replace('{{resetLink}}', resetLink);
 
         const success = await sendForgotPasswordEmail({ recipientEmail: email, subject: 'Forgot Password', htmlFormat: formattedHtml });
-
         if (success) {
             admin.resetToken = resetToken;
             await admin.save();
