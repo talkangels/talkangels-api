@@ -40,6 +40,8 @@ const logIn = async (req, res, next) => {
             await staff.save();
 
             const token = generateToken(staff);
+            await getAllAngelsSocket();
+
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 success: true,

@@ -214,7 +214,6 @@ const forgotPassword = async (req, res, next) => {
         } else {
             return res.status(500).json({ status: 500, success: false, message: 'Failed to send forgot password email' });
         }
-
     } catch (error) {
         return res.status(500).json({ status: 500, success: false, message: 'Failed to send forgot password email' });
     }
