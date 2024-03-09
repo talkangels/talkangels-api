@@ -59,23 +59,24 @@ const getCallHistory = async (req, res, next) => {
 const saveCallHistory = async (req, res, next) => {
     try {
         const { staff_id, user_id, call_type, seconds } = req.body;
-
         if (!user_id || !call_type || !seconds) {
             return next(new ErrorHandler("User ID, call type, and seconds are required", StatusCodes.BAD_REQUEST));
         }
 
         const staff = await Staff.findById(staff_id);
         const user = await User.findById(user_id);
-
         if (!user) {
             return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
         }
-
         if (!staff) {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        const currentTime = new Date();
+        // const currentTime = new Date();
+        const currentTime1 = new Date().toLocaleString("en-IN", {timeZone: "Asia/Kolkata"});
+        
+        // Parse to ensure it's in Date format
+        const currentTime = new Date(currentTime1);
         currentTime.setSeconds(currentTime.getSeconds() - seconds);
 
         const existingStaff = staff.listing.call_history.find(entry => entry.user.equals(user_id));

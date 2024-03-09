@@ -36,7 +36,6 @@ const staffSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        default: '0'
     },
     language: {
         type: String,

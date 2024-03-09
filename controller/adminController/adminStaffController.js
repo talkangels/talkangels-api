@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const Staff = require("../../models/staffModel");
 const FileUplaodToFirebase = require("../../middleware/multerConfig");
+const { getAllAngelsSocket } = require("../staffController/staffController");
 
 const addStaff = async (req, res, next) => {
     try {
@@ -152,6 +153,7 @@ const updateStaff = async (req, res, next) => {
         if (!updatedStaff) {
             return next(new ErrorHandler(`Staff not found with id ${staffId}`, StatusCodes.NOT_FOUND));
         }
+        await getAllAngelsSocket();
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
