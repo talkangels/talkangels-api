@@ -30,13 +30,11 @@ const logIn = async (req, res, next) => {
                 }
             }
 
-            if (fcmToken) {
-                staff.fcmToken = fcmToken;
-                staff.active_status = 'Online'
-                staff.call_status = 'Available'
-                await staff.save();
-            }
+            staff.fcmToken = fcmToken;
+            staff.active_status = 'Online'
+            staff.call_status = 'Available'
             staff.log_out = 1;
+            
             await staff.save();
 
             const token = generateToken(staff);
