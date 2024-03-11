@@ -1,7 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const User = require("../../models/userModel");
-const Staff = require("../../models/staffModel");
 const { checkTokenValidity, sendNotification } = require("../../utils/notificationUtils");
 
 const sendNotifictionUser = async (req, res, next) => {

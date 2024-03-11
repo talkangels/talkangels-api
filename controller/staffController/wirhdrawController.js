@@ -40,6 +40,7 @@ const sendWithdrawRequest = async (req, res, next) => {
 
 
         staff.earnings.sent_withdraw_request = request_amount;
+        staff.earnings.withdraw_request_message = `Your withdrawal request of ${request_amount} is now pending. Please wait for approval or rejection.`;
 
         const newRequest = {
             request_amount,

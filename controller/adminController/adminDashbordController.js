@@ -90,11 +90,13 @@ const updateWithdrawRequestStatus = async (req, res, next) => {
                 staffMember.earnings.total_money_withdraws += requestToUpdate.request_amount;
                 staffMember.earnings.total_pending_money -= requestToUpdate.request_amount;
                 staffMember.earnings.sent_withdraw_request = 0;
+                staffMember.earnings.withdraw_request_message = `Your withdrawal request of ${requestToUpdate.request_amount} is now approval.`;
                 await staffMember.save();
             }
 
             if (status === 'reject') {
                 staffMember.earnings.sent_withdraw_request = 0;
+                staffMember.earnings.withdraw_request_message = `Your withdrawal request of ${requestToUpdate.request_amount} is now rejection.`;
                 await staffMember.save();
             }
 

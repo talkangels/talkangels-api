@@ -129,6 +129,10 @@ const staffSchema = new mongoose.Schema({
         sent_withdraw_request: {
             type: Number,
             default: 0
+        },
+        withdraw_request_message: {
+            type: String,
+            default: ""
         }
     },
     total_rating: {

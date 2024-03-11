@@ -16,7 +16,7 @@ const addWePage = async (req, res, next) => {
         const existingPage = await WebPage.findOne({ page });
         if (existingPage) {
             return next(new ErrorHandler("Page is already in use", StatusCodes.BAD_REQUEST));
-        }
+        } 
 
         const webPage = new WebPage({
             page,
@@ -29,7 +29,6 @@ const addWePage = async (req, res, next) => {
             success: true,
             message: `Page added successfully`,
         });
-
     } catch (error) {
         return next(new ErrorHandler(error.message || "Internal Server Error", StatusCodes.INTERNAL_SERVER_ERROR));
     }
