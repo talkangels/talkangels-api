@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
 
 const errorMiddleware = require('./errors/error');
 dotenv.config({ path: 'config/config.env' });
@@ -17,6 +18,8 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(helmet());
 
 // Route imports
 const admin = require('./routes/adminRoute');
