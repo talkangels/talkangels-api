@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const Staff = require("../../models/staffModel");
 const User = require("../../models/userModel");
+const moment = require('moment-timezone');
 
 const getCallHistory = async (req, res, next) => {
     try {
@@ -72,12 +73,8 @@ const saveCallHistory = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        // const currentTime = new Date();
-        const currentTime1 = new Date().toLocaleString("en-IN", {timeZone: "Asia/Kolkata"});
-        
-        // Parse to ensure it's in Date format
-        const currentTime = new Date(currentTime1);
-        currentTime.setSeconds(currentTime.getSeconds() - seconds);
+        const currentTime = moment().tz('Asia/Kolkata').subtract(seconds, 'seconds');
+        const callTime = moment(currentTime).subtract(seconds, 'seconds').format('HH:mm:ss A');
 
         const existingStaff = staff.listing.call_history.find(entry => entry.user.equals(user_id));
         const formattedSeconds = formatSecondsin(seconds);
@@ -87,6 +84,7 @@ const saveCallHistory = async (req, res, next) => {
                 user: user_id,
                 history: [{
                     date: currentTime,
+                    call_time: callTime,
                     call_type,
                     mobile_number: user.mobile_number,
                     minutes: formattedSeconds,
@@ -97,6 +95,7 @@ const saveCallHistory = async (req, res, next) => {
             if (!existingHistory) {
                 existingStaff.history.push({
                     date: currentTime,
+                    call_time: callTime,
                     call_type,
                     mobile_number: user.mobile_number,
                     minutes: formattedSeconds,
@@ -144,6 +143,7 @@ const saveCallHistory = async (req, res, next) => {
                 mobile_number: staff.mobile_number,
                 user_id,
                 call_type,
+                call_time: callTime,
                 date: currentTime,
                 minutes: formattedSeconds,
             },

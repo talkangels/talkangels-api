@@ -96,6 +96,10 @@ const staffSchema = new mongoose.Schema({
                             type: Date,
                             required: true,
                         },
+                        call_time: {
+                            type: String,
+                            required: true,
+                        },
                         call_type: {
                             type: String,
                             required: true,

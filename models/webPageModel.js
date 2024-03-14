@@ -5,6 +5,10 @@ const webPageSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    route: {
+        type: String,
+        default: ""
+    },
     data: []
 });
 
