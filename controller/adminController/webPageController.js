@@ -49,8 +49,46 @@ const getPageData = async (req, res, next) => {
     }
 };
 
+const getAllPageNames = async (req, res, next) => {
+    try {
+        const pages = await WebPage.find({}, 'page'); 
+
+        const pageNames = pages.map(page => page.page);
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            data: pageNames,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error.message || "Internal Server Error", StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
+const deletePage = async (req, res, next) => {
+    try {
+        const { page } = req.body;
+
+        const deletedPage = await WebPage.findOneAndDelete({ page });
+
+        if (!deletedPage) {
+            return next(new ErrorHandler("Page not found", StatusCodes.NOT_FOUND));
+        }
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: `Page "${page}" deleted successfully`,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error.message || "Internal Server Error", StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
 
 module.exports = {
     addWePage,
-    getPageData
+    getPageData,
+    deletePage,
+    getAllPageNames
 };

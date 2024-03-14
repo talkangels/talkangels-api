@@ -10,7 +10,6 @@ const { checkTokenValidity } = require("../utils/notificationUtils");
 const logIn = async (req, res, next) => {
     try {
         const { name, mobile_number, country_code, fcmToken } = req.body;
-
         if (!name || !mobile_number) {
             return next(new ErrorHandler("All fields are required for LogIn", StatusCodes.BAD_REQUEST));
         }
@@ -23,7 +22,6 @@ const logIn = async (req, res, next) => {
             if (staff.fcmToken) {
                 isTokenValid = await checkTokenValidity(staff.fcmToken);
             }
-
             if (isTokenValid === true) {
                 if (staff.log_out === 1) {
                     return next(new ErrorHandler("Please log out from another device.", StatusCodes.UNAUTHORIZED));
@@ -116,7 +114,6 @@ const logIn = async (req, res, next) => {
 const logout = async (req, res, next) => {
     try {
         const { mobile_number } = req.body;
-
         if (!mobile_number) {
             return next(new ErrorHandler("Mobile number is required for logout", StatusCodes.BAD_REQUEST));
         }
