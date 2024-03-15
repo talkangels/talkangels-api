@@ -7,7 +7,7 @@ const { getAllWithdrawRequests, updateWithdrawRequestStatus, updateChargesForAll
 const { getTotalRatings } = require("../controller/userController/ratingController")
 const { getAllReport, updateReportStatus } = require("../controller/adminController/reportController")
 const FileUplaodToFirebase = require("../middleware/multerConfig");
-const { sendNotifictionUser, downlodePdf } = require("../controller/adminController/notificaton")
+const { sendNotifictionUser } = require("../controller/adminController/notificaton")
 const { addWePage, getPageData, deletePage, getAllPageNames } = require("../controller/adminController/webPageController")
 
 const router = express.Router()
@@ -53,9 +53,5 @@ router.post("/admin/add-web-page", authenticateUser, authorizePermission("admin"
 router.post("/admin/get-web-page", getPageData)
 router.delete("/admin/delete-web-page", authenticateUser, authorizePermission("admin"), deletePage)
 router.get("/admin/all-web-page-name", getAllPageNames)
-
-
-
-router.get("/generate-pdf", downlodePdf)
 
 module.exports = router
