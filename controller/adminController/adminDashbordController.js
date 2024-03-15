@@ -20,15 +20,15 @@ const getAllWithdrawRequests = async (req, res, next) => {
             ...withdrawRequests.map(requests =>
                 requests.request.find(req => new Date(req.date).setHours(0, 0, 0, 0) === currentDate)
             )
-        );
+        ); 
 
         const formattedRequests = [].concat(
             ...withdrawRequests.map(requests =>
                 requests.request.map(req => ({
                     _id: req._id,
-                    staff_name: requests.staff.name,
-                    staff_number: requests.staff.mobile_number,
-                    staff_image: requests.staff.image,
+                    staff_name: requests.staff?.name || "Not Found",
+                    staff_number: requests.staff?.mobile_number || "Not Found",
+                    staff_image: requests.staff?.image || "Not Found",
                     request_amount: req.request_amount,
                     current_amount: req.current_amount,
                     date: req.date,
