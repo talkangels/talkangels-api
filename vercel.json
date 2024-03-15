@@ -2,5 +2,8 @@
   "version": 2,
   "name": "Talk Angels",
   "builds": [{ "src": "server.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "(.*)", "dest": "server.js" }]
+  "routes": [
+    { "src": "/socket.io", "dest": "server.js" }, 
+    { "src": "/(.*)", "dest": "server.js" } 
+  ]
 }
