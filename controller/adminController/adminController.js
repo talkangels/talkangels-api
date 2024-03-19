@@ -43,6 +43,7 @@ const loginAdmin = async (req, res, next) => {
         }
 
         const user = await Admin.findOne({ email });
+        console.log("🚀 ~ loginAdmin ~ user:", user)
         if (!user) {
             return next(new ErrorHandler("Authentication failed", StatusCodes.UNAUTHORIZED));
         }
@@ -65,7 +66,6 @@ const loginAdmin = async (req, res, next) => {
                 success: true,
                 message: `${user.role} logged in successfully`,
                 user: userWithoutPassword,
-                charges: staffs ? staffs[0].charges : 0,
                 Token: token
             });
         } else {
