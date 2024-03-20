@@ -6,17 +6,21 @@ admin.initializeApp({
 });
 
 const sendNotification = async (fcmToken, title, body, data) => {
-    const message = {
-        token: fcmToken,
-        notification: {
-            title: title,
-            body: body
-        },
-        data: data
-    };
+    try {
+        const message = {
+            token: fcmToken,
+            notification: {
+                title: title,
+                body: body
+            },
+            data: data
+        };
 
-    // Sending notification
-    await admin.messaging().send(message);
+        // Sending notification
+        await admin.messaging().send(message);
+    } catch (error) {
+
+    }
 };
 
 async function checkTokenValidity(token) {
