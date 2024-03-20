@@ -22,7 +22,11 @@ const sendNotification = async (fcmToken, title, body, data) => {
 async function checkTokenValidity(token) {
     try {
         const message = {
-            token: token
+            token: token,
+            notification: {
+                title: "Security Alert",
+                body: "this account tries to log in on devices"
+            },
         };
         await admin.messaging().send(message);
         return true;

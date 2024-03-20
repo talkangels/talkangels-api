@@ -43,15 +43,12 @@ const loginAdmin = async (req, res, next) => {
         }
 
         const user = await Admin.findOne({ email });
-        console.log("🚀 ~ loginAdmin ~ user:", user)
         if (!user) {
             return next(new ErrorHandler("Authentication failed", StatusCodes.UNAUTHORIZED));
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (passwordMatch) {
-            const staffs = await staffModel.find();
-
             const userWithoutPassword = { ...user.toObject() };
             delete userWithoutPassword.password;
 
@@ -72,7 +69,6 @@ const loginAdmin = async (req, res, next) => {
             return next(new ErrorHandler("Authentication failed", StatusCodes.UNAUTHORIZED));
         }
     } catch (error) {
-        console.error("Error during login:", error);
         return next(new ErrorHandler("Authentication failed", StatusCodes.INTERNAL_SERVER_ERROR));
     }
 };

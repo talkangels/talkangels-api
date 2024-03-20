@@ -3,7 +3,7 @@ const { registerAdmin, loginAdmin, getAllUser, updateUserStatus, getAdminDetail,
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff } = require("../controller/adminController/adminStaffController")
 const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
-const { getAllWithdrawRequests, updateWithdrawRequestStatus, updateChargesForAllStaff, getTopRatedStaff } = require("../controller/adminController/adminDashbordController")
+const { getAllWithdrawRequests, updateWithdrawRequestStatus, updateChargesForAllStaff, getTopRatedStaff, getTotalHoursWorked } = require("../controller/adminController/adminDashbordController")
 const { getTotalRatings } = require("../controller/userController/ratingController")
 const { getAllReport, updateReportStatus } = require("../controller/adminController/reportController")
 const FileUplaodToFirebase = require("../middleware/multerConfig");
@@ -22,9 +22,12 @@ router.put("/admin/update/:id", authenticateUser, authorizePermission("admin"), 
 
 router.get("/admin/detail/:id", authenticateUser, authorizePermission("admin"), getAdminDetail)
 router.get("/admin/all-user", authenticateUser, authorizePermission("admin"), getAllUser)
-router.get("/admin/most-rated", authenticateUser, authorizePermission("admin"), getTopRatedStaff)
-router.post("/admin/update-charges", authenticateUser, authorizePermission("admin"), updateChargesForAllStaff)
 router.put("/admin/update-user/:id", authenticateUser, authorizePermission("admin"), updateUserStatus)
+
+// Dashbord
+router.post("/admin/update-charges", authenticateUser, authorizePermission("admin"), updateChargesForAllStaff)
+router.get("/admin/most-rated", authenticateUser, authorizePermission("admin"), getTopRatedStaff)
+router.get("/admin/total-hr", authenticateUser, authorizePermission("admin"), getTotalHoursWorked)
 
 // Report admin routes...
 router.get("/admin/all-report", authenticateUser, authorizePermission("admin"), getAllReport)

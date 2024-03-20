@@ -198,9 +198,66 @@ const getTopRatedStaff = async (req, res, next) => {
     }
 };
 
+const getTotalHoursWorked = async (req, res, next) => {
+    try {
+        const totalMinutesWorkedPipeline = [
+            {
+                $unwind: "$listing.call_history"
+            },
+            {
+                $unwind: "$listing.call_history.history"
+            },
+            {
+                $project: {
+                    totalMinutes: {
+                        $regexFind: {
+                            input: "$listing.call_history.history.minutes",
+                            regex: /\d+/
+                        }
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalMinutes: {
+                        $sum: {
+                            $toInt: "$totalMinutes.match"
+                        }
+                    }
+                }
+            }
+        ];
+
+        // Execute aggregation
+        const result = await Staff.aggregate(totalMinutesWorkedPipeline);
+
+        // Calculate total hours and minutes
+        const totalMinutes = result.length > 0 ? result[0].totalMinutes : 0;
+        const totalHours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            data: {
+                total_minutes: {
+                    hr: totalHours.toString(),
+                    min: remainingMinutes.toString()
+                },
+                Revenue: "" // You can calculate revenue here if needed
+            }
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
+
 module.exports = {
     getAllWithdrawRequests,
     updateWithdrawRequestStatus,
     updateChargesForAllStaff,
-    getTopRatedStaff
+    getTopRatedStaff,
+    getTotalHoursWorked
 };
