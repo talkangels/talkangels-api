@@ -20,14 +20,9 @@ const sendNotifictionUser = async (req, res, next) => {
         const notifications = [];
         for (const user of users) {
             if (user.fcmToken) {
-                const isTokenValid = await checkTokenValidity(user.fcmToken);
-                if (isTokenValid) {
-                    const data = { angel_id: angel_id || '', type: type, };
-                    await sendNotification(user.fcmToken, title, body, data);
-                    notifications.push({ user: user._id, status: "sent" });
-                } else {
-                    notifications.push({ user: user._id, status: "token_invalid" });
-                }
+                const data = { angel_id: angel_id || '', type: type, };
+                await sendNotification(user.fcmToken, title, body, data);
+                notifications.push({ user: user._id, status: "sent" });
             } else {
                 notifications.push({ user: user._id, status: "token_missing" });
             }
