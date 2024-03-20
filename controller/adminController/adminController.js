@@ -44,7 +44,7 @@ const loginAdmin = async (req, res, next) => {
 
         const user = await Admin.findOne({ email });
         if (!user) {
-            return next(new ErrorHandler("Authentication failed", StatusCodes.UNAUTHORIZED));
+            return next(new ErrorHandler("Invalid , Please check your email address.", StatusCodes.UNAUTHORIZED));
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
@@ -66,7 +66,7 @@ const loginAdmin = async (req, res, next) => {
                 Token: token
             });
         } else {
-            return next(new ErrorHandler("Authentication failed", StatusCodes.UNAUTHORIZED));
+            return next(new ErrorHandler("Incorrect Password", StatusCodes.UNAUTHORIZED));
         }
     } catch (error) {
         return next(new ErrorHandler("Authentication failed", StatusCodes.INTERNAL_SERVER_ERROR));
