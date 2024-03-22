@@ -15,7 +15,7 @@ router.put("/user/update-call-status/:staffId", authenticateUser, updateCallStat
 router.put("/staff/update-staff/:id", authenticateUser, FileUplaodToFirebase.uploadMulter.single("image"), updateStaff)
 
 router.put("/staff/update-active-status/:staffId", authenticateUser, authorizePermission("staff"), updateActiveStatus)
-router.get("/staff/detail/:id", authenticateUser, authorizePermission("staff"), getOneStaff)
+router.get("/staff/detail/:id",  getOneStaff)
 
 router.get("/staff/call-history/:staffId", authenticateUser, authorizePermission("staff"), getCallHistory)
 router.post("/staff/send-withdraw-request", authenticateUser, authorizePermission("staff"), sendWithdrawRequest)

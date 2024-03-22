@@ -31,6 +31,10 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             return next(new ErrorHandler("Angel is now busy. Please try again later.", StatusCodes.NOT_FOUND));
         }
 
+        if (staff.call_status === 'NotAvailable') {
+            return next(new ErrorHandler("Angel is now Not Available. Please try again later.", StatusCodes.NOT_FOUND));
+        }
+
         if (staff.log_out === 0) {
             return next(new ErrorHandler("Angel is Not Available. Please try again later.", StatusCodes.UNAUTHORIZED));
         }

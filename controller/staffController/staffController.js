@@ -44,27 +44,11 @@ const updateActiveStatus = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        // if (staff.call_status === "Busy") {
-        //     return next(new ErrorHandler("Please do not update the active status. Angel is Busy.", StatusCodes.BAD_REQUEST));
-        // }
-
         if (!["Online", "Offline"].includes(active_status)) {
             return next(new ErrorHandler("Invalid active_status", StatusCodes.BAD_REQUEST));
         }
 
         staff.active_status = active_status;
-
-        // if (staff.active_status === "Online" && active_status === "Offline") {
-        //     staff.active_status = active_status;
-        // } else if (staff.active_status === "Offline" && active_status === "Online") {
-        //     staff.active_status = active_status;
-        // } else {
-        //     return res.status(StatusCodes.BAD_REQUEST).json({
-        //         status: StatusCodes.BAD_REQUEST,
-        //         success: false,
-        //         message: "Invalid Active status transition",
-        //     });
-        // }
         await staff.save();
 
         await getAllAngelsSocket()
@@ -95,27 +79,10 @@ const updateCallStatus = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        // if (staff.active_status === "Offline") {
-        //     return next(new ErrorHandler("Please do not update the call status. Angel is offline.", StatusCodes.BAD_REQUEST));
-        // }
-
         if (!["Available", "Busy", "NotAvailable"].includes(call_status)) {
             return next(new ErrorHandler("Invalid call_status", StatusCodes.BAD_REQUEST));
         }
-
-        if (staff.call_status === "Available" && call_status === "Busy") {
-            staff.call_status = call_status;
-        } else if (staff.call_status === "Busy" && call_status === "Available") {
-            staff.call_status = call_status;
-        } else if (staff.call_status === "NotAvailable" && call_status === "NotAvailable") {
-            staff.call_status = call_status;
-        } else {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                status: StatusCodes.BAD_REQUEST,
-                success: false,
-                message: "Invalid call status transition",
-            });
-        }
+        staff.call_status = call_status;
         await staff.save();
 
         await getAllAngelsSocket()
