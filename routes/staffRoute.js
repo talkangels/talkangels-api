@@ -11,7 +11,7 @@ const router = express.Router()
 router.post("/staff/save-call-history", authenticateUser, saveCallHistory)
 
 router.put("/user/update-call-status/:staffId", authenticateUser, updateCallStatus)
-router.put("/staff/update-Available-status/:staffId", updateCallAvailableStatus)
+router.put("/staff/update-available-status/:staffId", authenticateUser, authorizePermission("staff"), updateCallAvailableStatus)
 
 router.put("/staff/update-staff/:id", authenticateUser, FileUplaodToFirebase.uploadMulter.single("image"), updateStaff)
 
