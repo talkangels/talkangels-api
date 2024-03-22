@@ -14,7 +14,6 @@ router.put("/user/update-call-status/:staffId", authenticateUser, updateCallStat
 router.put("/staff/update-available-status/:staffId", authenticateUser, authorizePermission("staff"), updateCallAvailableStatus)
 
 router.put("/staff/update-staff/:id", authenticateUser, FileUplaodToFirebase.uploadMulter.single("image"), updateStaff)
-
 router.put("/staff/update-active-status/:staffId", authenticateUser, authorizePermission("staff"), updateActiveStatus)
 router.get("/staff/detail/:id", authenticateUser, authorizePermission("staff"), getOneStaff)
 
