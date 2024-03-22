@@ -125,7 +125,7 @@ const updateCallAvailableStatus = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        if (![0, 1].includes(call_available_status)) {
+        if (!["0", "1"].includes(call_available_status)) {
             return next(new ErrorHandler("Invalid call_status", StatusCodes.BAD_REQUEST));
         }
         staff.call_available_status = call_available_status;
