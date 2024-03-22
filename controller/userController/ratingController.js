@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const User = require("../../models/userModel");
 const Staff = require("../../models/staffModel");
+const { getAllAngelsSocket } = require("../staffController/staffController");
 
 const addRating = async (req, res, next) => {
     try {
@@ -49,6 +50,7 @@ const addRating = async (req, res, next) => {
         staff.total_rating = Math.min(totalRatings / staff.reviews.length, maxRating);
 
         await staff.save();
+        await getAllAngelsSocket();
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,

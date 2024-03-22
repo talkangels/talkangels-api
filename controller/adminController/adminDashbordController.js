@@ -3,6 +3,7 @@ const ErrorHandler = require("../../middleware/errorHandler");
 const Withdraws = require("../../models/withdrawModel");
 const Staff = require("../../models/staffModel");
 const Admin = require("../../models/adminModel");
+const { getAllAngelsSocket } = require("../staffController/staffController");
 
 const getAllWithdrawRequests = async (req, res, next) => {
     try {
@@ -136,6 +137,7 @@ const updateChargesForAllStaff = async (req, res, next) => {
 
         await Staff.updateMany({}, { $set: { charges: newCharges } });
         await Admin.updateMany({}, { $set: { charges: newCharges } });
+        await getAllAngelsSocket();
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
