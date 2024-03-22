@@ -79,6 +79,19 @@ const updateCallStatus = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
+        if (staff.call_available_status === 0) {
+            return res.status(StatusCodes.OK).json({
+                status: StatusCodes.OK,
+                success: true,
+                message: `Please check Available status`,
+                data: {
+                    name: staff.name,
+                    mobile_number: staff.mobile_number,
+                    callStatus: staff.call_status,
+                },
+            });
+        }
+
         if (!["Available", "Busy", "NotAvailable"].includes(call_status)) {
             return next(new ErrorHandler("Invalid call_status", StatusCodes.BAD_REQUEST));
         }
@@ -102,8 +115,41 @@ const updateCallStatus = async (req, res, next) => {
     }
 };
 
+const updateCallAvailableStatus = async (req, res, next) => {
+    try {
+        const { staffId } = req.params;
+        const { call_available_status } = req.body;
+
+        const staff = await Staff.findById(staffId);
+        if (!staff) {
+            return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (![0, 1].includes(call_available_status)) {
+            return next(new ErrorHandler("Invalid call_status", StatusCodes.BAD_REQUEST));
+        }
+        staff.call_available_status = call_available_status;
+        await staff.save();
+
+        await getAllAngelsSocket()
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: `Call Available status updated successfully for staff`,
+            data: {
+                name: staff.name,
+                mobile_number: staff.mobile_number,
+                call_available_status: staff.call_available_status,
+            },
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
 module.exports = {
     updateActiveStatus,
     updateCallStatus,
-    getAllAngelsSocket
+    getAllAngelsSocket,
+    updateCallAvailableStatus
 };

@@ -62,6 +62,14 @@ const staffSchema = new mongoose.Schema({
         ],
         default: "NotAvailable"
     },
+    call_available_status: {
+        type: Number,
+        enum: [
+            0,
+            1,
+        ],
+        default: 1
+    },
     status: {
         type: Number,
         enum: [

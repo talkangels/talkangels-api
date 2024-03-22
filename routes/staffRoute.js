@@ -1,6 +1,6 @@
 const express = require("express")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
-const { updateActiveStatus, updateCallStatus } = require("../controller/staffController/staffController")
+const { updateActiveStatus, updateCallStatus, updateCallAvailableStatus } = require("../controller/staffController/staffController")
 const { saveCallHistory, getCallHistory } = require("../controller/staffController/listingController")
 const { sendWithdrawRequest } = require("../controller/staffController/wirhdrawController")
 const { getOneStaff, updateStaff } = require("../controller/adminController/adminStaffController")
@@ -11,6 +11,7 @@ const router = express.Router()
 router.post("/staff/save-call-history", authenticateUser, saveCallHistory)
 
 router.put("/user/update-call-status/:staffId", authenticateUser, updateCallStatus)
+router.put("/staff/update-Available-status/:staffId", updateCallAvailableStatus)
 
 router.put("/staff/update-staff/:id", authenticateUser, FileUplaodToFirebase.uploadMulter.single("image"), updateStaff)
 
