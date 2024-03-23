@@ -79,7 +79,7 @@ const updateCallStatus = async (req, res, next) => {
             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
         }
 
-        if (staff.call_available_status === 0) {
+        if (staff.call_available_status === "0") {
             return res.status(StatusCodes.OK).json({
                 status: StatusCodes.OK,
                 success: true,
@@ -126,7 +126,7 @@ const updateCallAvailableStatus = async (req, res, next) => {
         }
 
         if (!["0", "1"].includes(call_available_status)) {
-            return next(new ErrorHandler("Invalid call_status", StatusCodes.BAD_REQUEST));
+            return next(new ErrorHandler("Invalid call_available_status", StatusCodes.BAD_REQUEST));
         }
         staff.call_available_status = call_available_status;
         await staff.save();

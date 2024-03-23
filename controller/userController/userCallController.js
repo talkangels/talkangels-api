@@ -27,7 +27,7 @@ const generateAgoraInfoForUser = async (req, res, next) => {
             return next(new ErrorHandler("Insufficient balance. Please recharge your account.", StatusCodes.NOT_FOUND));
         }
 
-        if (staff.call_available_status === 0) {
+        if (staff.call_available_status === "0") {
             return next(new ErrorHandler("Angel is now Not Available. Please try again later.", StatusCodes.NOT_FOUND));
         }
 
