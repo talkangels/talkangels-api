@@ -24,6 +24,7 @@ const getCallHistory = async (req, res, next) => {
                     history: entry.history.map(history => ({
                         date: history.date,
                         call_type: history.call_type,
+                        call_time: history.call_time,
                         minutes: history.minutes,
                         mobile_number: history.mobile_number,
                     })),
@@ -40,6 +41,7 @@ const getCallHistory = async (req, res, next) => {
                 history: entry.history.map(history => ({
                     date: history.date,
                     call_type: history.call_type,
+                    call_time: history.call_time,
                     minutes: history.minutes,
                     mobile_number: history.mobile_number,
                 })),
