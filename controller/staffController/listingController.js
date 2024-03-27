@@ -3,6 +3,7 @@ const ErrorHandler = require("../../middleware/errorHandler");
 const Staff = require("../../models/staffModel");
 const User = require("../../models/userModel");
 const moment = require('moment-timezone');
+const Admin = require("../../models/adminModel");
 
 const getCallHistory = async (req, res, next) => {
     try {
@@ -59,6 +60,103 @@ const getCallHistory = async (req, res, next) => {
     }
 };
 
+// const saveCallHistory = async (req, res, next) => {
+//     try {
+//         const { staff_id, user_id, call_type, seconds } = req.body;
+//         if (!user_id || !call_type || !seconds) {
+//             return next(new ErrorHandler("User ID, call type, and seconds are required", StatusCodes.BAD_REQUEST));
+//         }
+
+//         const staff = await Staff.findById(staff_id);
+//         const user = await User.findById(user_id);
+//         if (!user) {
+//             return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+//         }
+//         if (!staff) {
+//             return next(new ErrorHandler("Staff not found", StatusCodes.NOT_FOUND));
+//         }
+
+//         const currentTime = moment().tz('Asia/Kolkata').subtract(seconds, 'seconds');
+//         const callTime = moment(currentTime).subtract(seconds, 'seconds').format('HH:mm:ss A');
+
+//         const existingStaff = staff.listing.call_history.find(entry => entry.user.equals(user_id));
+//         const formattedSeconds = formatSecondsin(seconds);
+
+//         if (!existingStaff) {
+//             staff.listing.call_history.push({
+//                 user: user_id,
+//                 history: [{
+//                     date: currentTime,
+//                     call_time: callTime,
+//                     call_type,
+//                     mobile_number: user.mobile_number,
+//                     minutes: formattedSeconds,
+//                 }],
+//             });
+//         } else {
+//             const existingHistory = existingStaff.history.find(entry => entry.date.toString() === currentTime.toString() && entry.call_type === call_type);
+//             if (!existingHistory) {
+//                 existingStaff.history.push({
+//                     date: currentTime,
+//                     call_time: callTime,
+//                     call_type,
+//                     mobile_number: user.mobile_number,
+//                     minutes: formattedSeconds,
+//                 });
+//             } else {
+//                 return res.status(StatusCodes.OK).json({
+//                     status: StatusCodes.OK,
+//                     success: true,
+//                     message: "Duplicate entry. Skipping.",
+//                 });
+//             }
+//         }
+
+//         if (seconds !== 0) {
+//             const chargePerMinute = staff.charges;
+//             const earnings = calculateEarnings(seconds, chargePerMinute);
+//             staff.earnings.current_earnings = parseFloat((earnings + staff.earnings.current_earnings).toFixed(2));
+//             staff.earnings.total_pending_money = parseFloat((staff.earnings.total_money_withdraws === 0 ? staff.earnings.current_earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws).toFixed(2));
+
+//             const totalSeconds = calculateTotalSeconds(staff.listing.call_history);
+//             staff.listing.total_minutes = formatSeconds(totalSeconds);
+
+//             const user_ballance = user.talk_angel_wallet.total_ballance - earnings;
+//             user.talk_angel_wallet.total_ballance = user_ballance.toFixed(2)
+//             const userTransaction = {
+//                 amount: earnings,
+//                 payment_id: '0',
+//                 type: 'debited',
+//                 curent_bellance: user.talk_angel_wallet.total_ballance,
+//                 date: currentTime,
+//             };
+
+//             user.talk_angel_wallet.transections.push(userTransaction);
+//         }
+
+//         await staff.save();
+//         await user.save();
+
+//         return res.status(StatusCodes.OK).json({
+//             status: StatusCodes.OK,
+//             success: true,
+//             message: "Call history saved successfully",
+//             data: {
+//                 name: staff.name,
+//                 mobile_number: staff.mobile_number,
+//                 user_id,
+//                 call_type,
+//                 call_time: callTime,
+//                 date: currentTime,
+//                 minutes: formattedSeconds,
+//             },
+//         });
+//     } catch (error) {
+//         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+//     }
+// };
+
+
 const saveCallHistory = async (req, res, next) => {
     try {
         const { staff_id, user_id, call_type, seconds } = req.body;
@@ -111,30 +209,46 @@ const saveCallHistory = async (req, res, next) => {
             }
         }
 
+        // Fetch admin charges
+        const admin = await Admin.findOne({ role: 'admin' });
+        if (!admin) {
+            return next(new ErrorHandler("Admin not found", StatusCodes.NOT_FOUND));
+        }
         if (seconds !== 0) {
-            const chargePerMinute = staff.charges || 1;
-            const earnings = calculateEarnings(seconds, chargePerMinute);
-            staff.earnings.current_earnings = parseFloat((earnings + staff.earnings.current_earnings).toFixed(2));
-            staff.earnings.total_pending_money = parseFloat((staff.earnings.total_money_withdraws === 0 ? staff.earnings.current_earnings : staff.earnings.current_earnings - staff.earnings.total_money_withdraws).toFixed(2));
+            const staffChargePerMinute = staff.staff_charges;
+            const userChargePerMinute = admin.user_charges;
 
-            const totalSeconds = calculateTotalSeconds(staff.listing.call_history);
-            staff.listing.total_minutes = formatSeconds(totalSeconds);
+            const staffEarnings = calculateEarnings(seconds, staffChargePerMinute);
+            const userEarnings = calculateEarnings(seconds, userChargePerMinute);
 
-            const user_ballance = user.talk_angel_wallet.total_ballance - earnings;
-            user.talk_angel_wallet.total_ballance = user_ballance.toFixed(2)
+            // Calculate admin revenue
+            const revenueEarned = ((userChargePerMinute - staffChargePerMinute) * (seconds / 60)).toFixed(2); 
+
+            // Update staff earnings
+            staff.earnings.current_earnings += staffEarnings;
+            staff.earnings.total_pending_money += staffEarnings;
+
+            // Update user wallet balance
+            user.talk_angel_wallet.total_ballance -= userEarnings;
+
+            // Update user transaction
             const userTransaction = {
-                amount: earnings,
+                amount: userEarnings,
                 payment_id: '0',
                 type: 'debited',
                 curent_bellance: user.talk_angel_wallet.total_ballance,
                 date: currentTime,
             };
-
             user.talk_angel_wallet.transections.push(userTransaction);
+
+            // Update admin revenue
+            admin.revenue.revenue_earnings = (parseFloat(admin.revenue.revenue_earnings) + parseFloat(revenueEarned)).toFixed(2);
+            admin.revenue.total_pending_money = (parseFloat(admin.revenue.total_pending_money) + parseFloat(revenueEarned)).toFixed(2);
         }
 
         await staff.save();
         await user.save();
+        await admin.save();
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
@@ -154,6 +268,9 @@ const saveCallHistory = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
 };
+
+
+
 
 function formatSecondsin(seconds) {
     const formattedMinutes = `${Math.floor(seconds / 60)}min ${seconds % 60}sec`;

@@ -13,9 +13,13 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    charges: {
+    staff_charges: {
         type: Number,
-        default: 1
+        required: true
+    },
+    user_charges: {
+        type: Number,
+        required: true
     },
     mobile_number: {
         type: Number,
@@ -27,6 +31,20 @@ const adminSchema = new mongoose.Schema({
     role: {
         type: String,
         default: 'admin'
+    },
+    revenue: {
+        revenue_earnings: {
+            type: Number,
+            default: 0
+        },
+        total_money_withdraws: {
+            type: Number,
+            default: 0
+        },
+        total_pending_money: {
+            type: Number,
+            default: 0
+        }
     },
     resetToken: String,
     resetTokenExpiry: Date,

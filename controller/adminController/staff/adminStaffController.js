@@ -1,8 +1,9 @@
 const { StatusCodes } = require("http-status-codes");
-const ErrorHandler = require("../../middleware/errorHandler");
-const Staff = require("../../models/staffModel");
-const FileUplaodToFirebase = require("../../middleware/multerConfig");
-const { getAllAngelsSocket } = require("../staffController/staffController");
+const ErrorHandler = require("../../../middleware/errorHandler");
+const Staff = require("../../../models/staffModel");
+const FileUplaodToFirebase = require("../../../middleware/multerConfig");
+const { getAllAngelsSocket } = require("../../staffController/staffController");
+const Admin = require("../../../models/adminModel");
 
 const addStaff = async (req, res, next) => {
     try {
@@ -28,8 +29,10 @@ const addStaff = async (req, res, next) => {
         if (!image) {
             return next(new ErrorHandler("Image image is required", StatusCodes.BAD_REQUEST));
         }
-
-        const certificateDownloadURL = await FileUplaodToFirebase.uploadCertifiesToFierbase(image);
+        const admin = await Admin.findOne({ role: 'admin' });
+        if (!admin) {
+            return next(new ErrorHandler("Admin not found", StatusCodes.NOT_FOUND));
+        }
 
         const staff = new Staff({
             image: certificateDownloadURL,
@@ -38,8 +41,11 @@ const addStaff = async (req, res, next) => {
             gender,
             bio,
             user_name,
+            staff_charges: admin.staff_charges,
+            user_charges: admin.user_charges
         });
         await staff.save();
+        await getAllAngelsSocket();
 
         return res.status(StatusCodes.CREATED).json({
             status: StatusCodes.CREATED,
@@ -194,8 +200,6 @@ const deleteStaff = async (req, res, next) => {
         return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
     }
 };
-
-
 
 module.exports = {
     addStaff,

@@ -5,9 +5,9 @@ const path = require('path');
 const ErrorHandler = require("../../middleware/errorHandler");
 const Admin = require("../../models/adminModel");
 const { generateToken } = require("../../utils/tokenGenerator");
-const User = require("../../models/userModel");
-const staffModel = require("../../models/staffModel");
 const sendForgotPasswordEmail = require("../../utils/nodemailer");
+const { getAllAngelsSocket } = require("../staffController/staffController");
+const Staff = require("../../models/staffModel");
 
 const registerAdmin = async (req, res, next) => {
     try {
@@ -73,70 +73,6 @@ const loginAdmin = async (req, res, next) => {
     }
 };
 
-const getAllUser = async (req, res, next) => {
-    try {
-        const page = parseInt(req.query.page_no) || 1;
-        const perPage = parseInt(req.query.items_per_page) || 10;
-        const { search_text } = req.query;
-
-        const query = search_text ? { $or: [{ name: { $regex: search_text, $options: 'i' } }, { mobile_number: { $regex: search_text, $options: 'i' } }] } : {};
-        const skip = (page - 1) * perPage;
-
-        const user = await User.find(query)
-            .skip(skip)
-            .limit(perPage);
-
-        const totalUsers = await User.countDocuments(query);
-        const allUsers = await User.countDocuments()
-        const totalPages = Math.ceil(totalUsers / perPage);
-
-        return res.status(StatusCodes.OK).json({
-            status: StatusCodes.OK,
-            success: true,
-            data: user,
-            pagination: {
-                total_items: allUsers,
-                total_pages: totalPages,
-                current_page_item: user.length,
-                page_no: parseInt(page),
-                items_per_page: parseInt(perPage),
-            },
-        });
-
-    } catch (error) {
-        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
-    }
-};
-
-const updateUserStatus = async (req, res, next) => {
-    try {
-        const user_id = req.params.id;
-        const {
-            status,
-        } = req.body;
-        const updatedUserData = {
-            status,
-        };
-
-        const updatedUser = await User.findByIdAndUpdate(
-            user_id,
-            { $set: updatedUserData },
-            { new: true }
-        );
-        if (!updatedUser) {
-            return next(new ErrorHandler(`Staff not found with id ${user_id}`, StatusCodes.NOT_FOUND));
-        }
-
-        return res.status(StatusCodes.OK).json({
-            status: StatusCodes.OK,
-            success: true,
-            message: `User Status updated successfully`,
-        });
-    } catch (error) {
-        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
-    }
-};
-
 const getAdminDetail = async (req, res, next) => {
     try {
         const adminId = req.params.id;
@@ -158,12 +94,14 @@ const getAdminDetail = async (req, res, next) => {
 const updateAdminData = async (req, res, next) => {
     try {
         const adminId = req.params.id;
-        const { email, name, mobile_number } = req.body;
+        const { email, name, mobile_number, user_charges, staff_charges } = req.body;
 
         const updatedAdminData = {};
         if (email) updatedAdminData.email = email;
         if (name) updatedAdminData.name = name;
         if (mobile_number) updatedAdminData.mobile_number = mobile_number;
+        if (staff_charges) updatedAdminData.staff_charges = staff_charges;
+        if (user_charges) updatedAdminData.user_charges = user_charges;
 
         const updatedAdmin = await Admin.findByIdAndUpdate(
             adminId,
@@ -171,9 +109,13 @@ const updateAdminData = async (req, res, next) => {
             { new: true }
         );
 
+        await Staff.updateMany({}, { $set: { staff_charges: staff_charges, user_charges: user_charges } });
+
         if (!updatedAdmin) {
             return next(new ErrorHandler(`Admin not found with id ${adminId}`, StatusCodes.NOT_FOUND));
         }
+        await getAllAngelsSocket();
+
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
             success: true,
@@ -247,8 +189,6 @@ const resetPassword = async (req, res, next) => {
 module.exports = {
     registerAdmin,
     loginAdmin,
-    getAllUser,
-    updateUserStatus,
     getAdminDetail,
     updateAdminData,
     forgotPassword,

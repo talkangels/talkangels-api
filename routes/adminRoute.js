@@ -1,14 +1,15 @@
 const express = require("express")
-const { registerAdmin, loginAdmin, getAllUser, updateUserStatus, getAdminDetail, updateAdminData, resetPassword, forgotPassword } = require("../controller/adminController/adminController")
+const { registerAdmin, loginAdmin, getAdminDetail, updateAdminData, resetPassword, forgotPassword } = require("../controller/adminController/adminController")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
-const { addStaff, getAllStaff, getOneStaff, updateStaff, deleteStaff } = require("../controller/adminController/adminStaffController")
+const { addStaff, getAllStaff, getOneStaff, deleteStaff } = require("../controller/adminController/staff/adminStaffController")
 const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
-const { getAllWithdrawRequests, updateWithdrawRequestStatus, updateChargesForAllStaff, getTopRatedStaff, getTotalHoursWorked } = require("../controller/adminController/adminDashbordController")
+const { getAllWithdrawRequests, updateWithdrawRequestStatus, getTopRatedStaff, getTotalHoursWorked } = require("../controller/adminController/adminDashbordController")
 const { getTotalRatings } = require("../controller/userController/ratingController")
 const { getAllReport, updateReportStatus } = require("../controller/adminController/reportController")
 const FileUplaodToFirebase = require("../middleware/multerConfig");
 const { sendNotifictionUser } = require("../controller/adminController/notificaton")
-const { addWePage, getPageData, deletePage, getAllPageNames } = require("../controller/adminController/webPageController")
+const { addWePage, getPageData, deletePage, getAllPageNames } = require("../controller/adminController/web/webPageController")
+const { getAllUser, updateUserStatus } = require("../controller/adminController/user/userController")
 
 const router = express.Router()
 
@@ -18,14 +19,14 @@ router.post("/auth/admin/login", loginAdmin)
 router.post("/admin/send-notification/user", authenticateUser, authorizePermission("admin"), sendNotifictionUser)
 router.post("/admin/forgot-password", forgotPassword)
 router.post("/admin/reset-password", resetPassword)
+router.get("/admin/detail/:id", authenticateUser, authorizePermission("admin"), getAdminDetail)
 router.put("/admin/update/:id", authenticateUser, authorizePermission("admin"), updateAdminData)
 
-router.get("/admin/detail/:id", authenticateUser, authorizePermission("admin"), getAdminDetail)
+// user
 router.get("/admin/all-user", authenticateUser, authorizePermission("admin"), getAllUser)
 router.put("/admin/update-user/:id", authenticateUser, authorizePermission("admin"), updateUserStatus)
 
 // Dashbord
-router.post("/admin/update-charges", authenticateUser, authorizePermission("admin"), updateChargesForAllStaff)
 router.get("/admin/most-rated", authenticateUser, authorizePermission("admin"), getTopRatedStaff)
 router.get("/admin/total-hr", authenticateUser, authorizePermission("admin"), getTotalHoursWorked)
 

@@ -2,8 +2,6 @@ const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../middleware/errorHandler");
 const Withdraws = require("../../models/withdrawModel");
 const Staff = require("../../models/staffModel");
-const Admin = require("../../models/adminModel");
-const { getAllAngelsSocket } = require("../staffController/staffController");
 
 const getAllWithdrawRequests = async (req, res, next) => {
     try {
@@ -127,28 +125,6 @@ const updateWithdrawRequestStatus = async (req, res, next) => {
     }
 };
 
-const updateChargesForAllStaff = async (req, res, next) => {
-    try {
-        const { newCharges } = req.body;
-
-        if (!newCharges) {
-            return next(new ErrorHandler("New charges are required", StatusCodes.BAD_REQUEST));
-        }
-
-        await Staff.updateMany({}, { $set: { charges: newCharges } });
-        await Admin.updateMany({}, { $set: { charges: newCharges } });
-        await getAllAngelsSocket();
-
-        return res.status(StatusCodes.OK).json({
-            status: StatusCodes.OK,
-            success: true,
-            message: "Charges updated successfully",
-        });
-    } catch (error) {
-        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
-    }
-};
-
 const getTopRatedStaff = async (req, res, next) => {
     try {
         const mostRatedStaff = await Staff.aggregate([
@@ -259,7 +235,6 @@ const getTotalHoursWorked = async (req, res, next) => {
 module.exports = {
     getAllWithdrawRequests,
     updateWithdrawRequestStatus,
-    updateChargesForAllStaff,
     getTopRatedStaff,
     getTotalHoursWorked
 };

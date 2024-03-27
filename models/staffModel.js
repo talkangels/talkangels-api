@@ -82,6 +82,14 @@ const staffSchema = new mongoose.Schema({
         type: Number,
         default: 1
     },
+    staff_charges: {
+        type: Number,
+        default: 1
+    },
+    user_charges: {
+        type: Number,
+        default: 2
+    },
     role: {
         type: String,
         default: 'staff'

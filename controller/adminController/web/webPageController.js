@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
-const ErrorHandler = require("../../middleware/errorHandler");
-const WebPage = require("../../models/webPageModel");
+const ErrorHandler = require("../../../middleware/errorHandler");
+const WebPage = require("../../../models/webPageModel");
 
 const addWePage = async (req, res, next) => {
     try {
