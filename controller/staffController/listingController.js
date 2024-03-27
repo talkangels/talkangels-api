@@ -4,6 +4,7 @@ const Staff = require("../../models/staffModel");
 const User = require("../../models/userModel");
 const moment = require('moment-timezone');
 const Admin = require("../../models/adminModel");
+const { getAllAngelsSocket } = require("./staffController");
 
 const getCallHistory = async (req, res, next) => {
     try {
@@ -118,14 +119,12 @@ const saveCallHistory = async (req, res, next) => {
             return next(new ErrorHandler("Admin not found", StatusCodes.NOT_FOUND));
         }
 
-        
         if (seconds !== 0) {
             const staffChargePerMinute = staff.staff_charges;
             const userChargePerMinute = admin.user_charges;
             
             const staffEarnings = calculateEarnings(seconds, staffChargePerMinute);
             const userEarnings = calculateEarnings(seconds, userChargePerMinute);
-            
             const totalSeconds = calculateTotalSeconds(staff.listing.call_history);
             staff.listing.total_minutes = formatSeconds(totalSeconds);
             
@@ -133,7 +132,6 @@ const saveCallHistory = async (req, res, next) => {
 
             staff.earnings.current_earnings += staffEarnings;
             staff.earnings.total_pending_money += staffEarnings;
-
             user.talk_angel_wallet.total_ballance -= userEarnings;
 
             // Update user transaction
@@ -154,6 +152,7 @@ const saveCallHistory = async (req, res, next) => {
         await staff.save();
         await user.save();
         await admin.save();
+        await getAllAngelsSocket();
 
         return res.status(StatusCodes.OK).json({
             status: StatusCodes.OK,
