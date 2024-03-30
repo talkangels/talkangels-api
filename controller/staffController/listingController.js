@@ -134,7 +134,6 @@ const saveCallHistory = async (req, res, next) => {
             staff.earnings.total_pending_money += staffEarnings;
             user.talk_angel_wallet.total_ballance -= userEarnings;
 
-            // Update user transaction
             const userTransaction = {
                 amount: userEarnings,
                 payment_id: '0',
