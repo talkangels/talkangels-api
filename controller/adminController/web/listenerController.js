@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const ErrorHandler = require("../../../middleware/errorHandler");
 const Admin = require("../../../models/adminModel");
 const Listener = require("../../../models/listenerModel");
+const Staff = require("../../../models/staffModel");
 
 
 const addListener = async (req, res, next) => {
@@ -17,8 +18,13 @@ const addListener = async (req, res, next) => {
             email
         } = req.body;
 
-        if (!name || !mobile_number || !gender || !bio || !country_code || !language || !age ||!email) {
+        if (!name || !mobile_number || !gender || !bio || !language || !age || !email) {
             return next(new ErrorHandler("All fields are required for sent request.", StatusCodes.BAD_REQUEST));
+        }
+
+        const existingStaff = await Staff.findOne({ mobile_number });
+        if (existingStaff) {
+            return next(new ErrorHandler("Mobile Number is already in use as Listener", StatusCodes.BAD_REQUEST));
         }
 
         const existingListenerReq = await Listener.findOne({ mobile_number });
@@ -116,9 +122,32 @@ const updateListener = async (req, res, next) => {
     }
 };
 
+const deleteListener = async (req, res, next) => {
+    try {
+        const listenerId = req.params.id;
+
+        const existingListener = await Listener.findById(listenerId);
+
+        if (!existingListener) {
+            return next(new ErrorHandler(`staff not found with id ${listenerId}`, StatusCodes.NOT_FOUND));
+        }
+
+        const deletedListener = await Listener.findByIdAndDelete(listenerId);
+
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+            message: `Listener deleted successfully`,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error, StatusCodes.INTERNAL_SERVER_ERROR));
+    }
+};
+
 module.exports = {
     addListener,
     getCharges,
     getAllListener,
-    updateListener
+    updateListener,
+    deleteListener
 };

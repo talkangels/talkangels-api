@@ -10,7 +10,7 @@ const { sendNotifictionUser } = require("../controller/adminController/notificat
 const { addWePage, getPageData, deletePage, getAllPageNames, getAllStaffWebPage } = require("../controller/adminController/web/webPageController")
 const { getAllUser, updateUserStatus } = require("../controller/adminController/user/userController")
 const FileUplaodToFirebase = require("../middleware/multerConfig")
-const { getCharges, getAllListener, addListener, updateListener } = require("../controller/adminController/web/listenerController")
+const { getCharges, getAllListener, addListener, updateListener, deleteListener } = require("../controller/adminController/web/listenerController")
 
 const router = express.Router()
 
@@ -65,5 +65,6 @@ router.post("/listener/add-listener-requst", addListener)
 router.get("/listener/get-charges", getCharges)
 router.get("/admin/listener/all-listeners-requst", getAllListener)
 router.put("/admin/listener/update-listener-requst/:id", authenticateUser, authorizePermission("admin"), updateListener)
+router.delete("/admin/listener/delete-listener-requst/:id", authenticateUser, authorizePermission("admin"), deleteListener)
 
 module.exports = router

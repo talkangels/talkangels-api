@@ -18,7 +18,7 @@ const listenersSchema = new mongoose.Schema({
     },
     country_code: {
         type: String,
-        required: true,
+        default: 0
     },
     gender: {
         type: String,
@@ -27,6 +27,7 @@ const listenersSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true
     },
     bio: {

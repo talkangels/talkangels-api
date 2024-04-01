@@ -26,7 +26,6 @@ const staffSchema = new mongoose.Schema({
     },
     country_code: {
         type: Number,
-        required: true,
         default: 0
     },
     gender: {
