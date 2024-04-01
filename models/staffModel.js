@@ -22,7 +22,6 @@ const staffSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
     },
     country_code: {
         type: Number,
