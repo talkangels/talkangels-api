@@ -20,6 +20,10 @@ const staffSchema = new mongoose.Schema({
             message: props => `please enter valid 10 digit mobile number!`
         },
     },
+    email: {
+        type: String,
+        required: true
+    },
     country_code: {
         type: Number,
         required: true,
@@ -39,11 +43,11 @@ const staffSchema = new mongoose.Schema({
     },
     language: {
         type: String,
-        default: '0'
+        required: true
     },
     age: {
         type: Number,
-        default: 0
+        required: true
     },
     active_status: {
         type: String,

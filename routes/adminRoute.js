@@ -6,10 +6,11 @@ const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRe
 const { getAllWithdrawRequests, updateWithdrawRequestStatus, getTopRatedStaff, getTotalHoursWorked } = require("../controller/adminController/adminDashbordController")
 const { getTotalRatings } = require("../controller/userController/ratingController")
 const { getAllReport, updateReportStatus } = require("../controller/adminController/reportController")
-const FileUplaodToFirebase = require("../middleware/multerConfig");
 const { sendNotifictionUser } = require("../controller/adminController/notificaton")
 const { addWePage, getPageData, deletePage, getAllPageNames, getAllStaffWebPage } = require("../controller/adminController/web/webPageController")
 const { getAllUser, updateUserStatus } = require("../controller/adminController/user/userController")
+const FileUplaodToFirebase = require("../middleware/multerConfig")
+const { getCharges, getAllListener, addListener, updateListener } = require("../controller/adminController/web/listenerController")
 
 const router = express.Router()
 
@@ -58,5 +59,11 @@ router.post("/admin/get-web-page", getPageData)
 router.delete("/admin/delete-web-page", authenticateUser, authorizePermission("admin"), deletePage)
 router.get("/admin/all-web-page-name", getAllPageNames)
 router.get("/admin/web-page-all-listeners", getAllStaffWebPage)
+
+// Listener admin routes....
+router.post("/listener/add-listener-requst", addListener)
+router.get("/listener/get-charges", getCharges)
+router.get("/admin/listener/all-listeners-requst", getAllListener)
+router.put("/admin/listener/update-listener-requst/:id", authenticateUser, authorizePermission("admin"), updateListener)
 
 module.exports = router

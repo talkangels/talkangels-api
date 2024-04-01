@@ -18,6 +18,11 @@ const logIn = async (req, res, next) => {
         let user = await User.findOne({ mobile_number });
 
         if (staff) {
+            const existingUser = await User.findOne({ mobile_number });
+            if (existingUser) {
+                return next(new ErrorHandler("Mobile Number is already in use for a User Account. Please delete this account or use a different number.", StatusCodes.BAD_REQUEST));
+            }
+
             let isTokenValid = true;
             if (staff.fcmToken) {
                 isTokenValid = await checkTokenValidity(staff.fcmToken);
@@ -32,7 +37,7 @@ const logIn = async (req, res, next) => {
             staff.active_status = 'Online'
             staff.call_status = 'Available'
             staff.log_out = 1;
-            
+
             await staff.save();
 
             const token = generateToken(staff);
@@ -48,6 +53,11 @@ const logIn = async (req, res, next) => {
             });
 
         } else if (user) {
+            const existingStaff = await Staff.findOne({ mobile_number });
+            if (existingStaff) {
+                return next(new ErrorHandler("Mobile Number is already in use for a Staff Account. Please delete this account or use a different number.", StatusCodes.BAD_REQUEST));
+            }
+
             let isTokenValid = true;
             if (user.fcmToken) {
                 isTokenValid = await checkTokenValidity(user.fcmToken);

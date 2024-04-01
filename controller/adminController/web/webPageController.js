@@ -102,6 +102,7 @@ const getAllStaffWebPage = async (req, res, next) => {
             "call_status": staffs.call_status,
             "total_rating": staffs.total_rating,
             "call_available_status": staffs.call_available_status,
+            "total_listing": staffs.listing.total_minutes,
             "reviews": staffs.reviews.reduce((allReviews, review) => allReviews.concat(review.user_reviews), []),
         }))
 
