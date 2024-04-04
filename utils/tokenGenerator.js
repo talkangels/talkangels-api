@@ -10,7 +10,6 @@ function generateToken(user) {
   };
   const expiresInDays = 10;
   const expirationTimeInSeconds = expiresInDays * 24 * 60 * 60;
-
   return jwt.sign(payload, secret_key, { expiresIn: expirationTimeInSeconds });
 }
 
@@ -26,5 +25,5 @@ function verifyToken(token) {
 
 module.exports = {
   generateToken,
-  verifyToken,
+  verifyToken
 };

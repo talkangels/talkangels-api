@@ -1,5 +1,5 @@
 const express = require("express")
-const { registerAdmin, loginAdmin, getAdminDetail, updateAdminData, resetPassword, forgotPassword } = require("../controller/adminController/adminController")
+const { registerAdmin, loginAdmin, getAdminDetail, updateAdminData, resetPassword, forgotPassword, checkAuthTokenValidity } = require("../controller/adminController/adminController")
 const { authenticateUser, authorizePermission } = require("../middleware/auth")
 const { addStaff, getAllStaff, getOneStaff, deleteStaff } = require("../controller/adminController/staff/adminStaffController")
 const { addRecharges, getAllRecharges, getOneRecharges, updateRecharge, deleteRecharge } = require("../controller/adminController/adminRechargeController")
@@ -22,6 +22,7 @@ router.post("/admin/forgot-password", forgotPassword)
 router.post("/admin/reset-password", resetPassword)
 router.get("/admin/detail/:id", authenticateUser, authorizePermission("admin"), getAdminDetail)
 router.put("/admin/update/:id", authenticateUser, authorizePermission("admin"), updateAdminData)
+router.post("/admin/token", checkAuthTokenValidity)
 
 // user
 router.get("/admin/all-user", authenticateUser, authorizePermission("admin"), getAllUser)

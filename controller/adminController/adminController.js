@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const ErrorHandler = require("../../middleware/errorHandler");
 const Admin = require("../../models/adminModel");
-const { generateToken } = require("../../utils/tokenGenerator");
+const { generateToken, verifyToken } = require("../../utils/tokenGenerator");
 const sendForgotPasswordEmail = require("../../utils/nodemailer");
 const { getAllAngelsSocket } = require("../staffController/staffController");
 const Staff = require("../../models/staffModel");
@@ -186,11 +186,32 @@ const resetPassword = async (req, res, next) => {
     }
 };
 
+const checkAuthTokenValidity = async (req, res, next) => {
+    try {
+        const token = req.body.token;
+
+        if (!token) {
+            return res.status(401).json({ success: false, message: 'Token is missing' });
+        }
+
+        const decodedToken = verifyToken(token);
+        return res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            success: true,
+           decodedToken
+        });
+
+    } catch (error) {
+        return false;
+    }
+};
+
 module.exports = {
     registerAdmin,
     loginAdmin,
     getAdminDetail,
     updateAdminData,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    checkAuthTokenValidity
 };

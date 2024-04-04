@@ -23,6 +23,6 @@ router.post("/user/apply-refer-code", authenticateUser, authorizePermission("use
 router.post("/user/add-rating", authenticateUser, authorizePermission("user"), addRating)
 router.get("/user/angel-detail/:id", authenticateUser, authorizePermission("user"), getOneAngel)
 router.post("/user/add-report", authenticateUser, authorizePermission("user"), addReport)
-router.delete("/user/delete/:id", authenticateUser, authorizePermission("user"), deleteUser)
+router.delete("/user/delete/:id", authenticateUser, deleteUser)
 
 module.exports = router
