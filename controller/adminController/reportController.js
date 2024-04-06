@@ -31,7 +31,7 @@ const getAllReport = async (req, res, next) => {
                 { _id: report.user._id, name: report.user.name, number: report.user.mobile_number, role: report.user.role }
                 : report.staff ?
                     { staff: report.staff._id, name: report.staff.name, number: report.staff.mobile_number, role: report.staff.role }
-                    : [],
+                    : null,
             __v: report.__v
         }));
 
