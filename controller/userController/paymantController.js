@@ -8,7 +8,7 @@ const { Cashfree } = require("cashfree-pg");
 
 Cashfree.XClientId = process.env.CLIENT_ID;
 Cashfree.XClientSecret = process.env.CLIENT_SECRET;
-Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 
 function generateOrderId() {
   const uniqueId = crypto.randomBytes(16).toString("hex");
@@ -96,10 +96,11 @@ const ProceedPayment = async (req, res, next) => {
         });
       })
       .catch((error) => {
+        console.log("🚀 ~ ProceedPayment ~ er̥ror:", error)
         return next(
           new ErrorHandler(
-            error.response.data,
-            StatusCodes.INTERNAL_SERVER_ERROR
+            error.response.data.message,
+            error.response.status
           )
         );
       });
