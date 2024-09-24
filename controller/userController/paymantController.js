@@ -8,7 +8,7 @@ const { Cashfree } = require("cashfree-pg");
 
 Cashfree.XClientId = process.env.CLIENT_ID;
 Cashfree.XClientSecret = process.env.CLIENT_SECRET;
-Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION ;
 
 function generateOrderId() {
   const uniqueId = crypto.randomBytes(16).toString("hex");
