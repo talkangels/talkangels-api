@@ -8,8 +8,7 @@ const { Cashfree } = require("cashfree-pg");
 
 Cashfree.XClientId = process.env.CLIENT_ID;
 Cashfree.XClientSecret = process.env.CLIENT_SECRET;
-Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION ;
-
+Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 function generateOrderId() {
   const uniqueId = crypto.randomBytes(16).toString("hex");
 
@@ -70,7 +69,7 @@ const ProceedPayment = async (req, res, next) => {
       },
     };
 
-    Cashfree.PGCreateOrder("2023-08-01", request)
+    Cashfree.PGCreateOrder("2022-09-01", request)
       .then(async (response) => {
         const currentTime = new Date();
 
@@ -99,7 +98,7 @@ const ProceedPayment = async (req, res, next) => {
         console.log("🚀 ~ ProceedPayment ~ er̥ror:", error)
         return next(
           new ErrorHandler(
-            error.response.data.message,
+            error,
             error.response.status
           )
         );
@@ -134,7 +133,7 @@ const addBalance = async (req, res, next) => {
 
     try {
       const paymentDetails = await Cashfree.PGOrderFetchPayments(
-        "2023-08-01",
+        "2022-09-01",
         payment_id
       );
 
