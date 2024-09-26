@@ -15,12 +15,10 @@ const sendNotification = async (fcmToken, title, body, data) => {
             },
             data: data
         };
-
         // Sending notification
         await admin.messaging().send(message);
     } catch (error) {
-    console.log("🚀 ~ sendNotification ~ error:", error)
-
+    console.log("🚀 ~ sendNotification ~ error:", error.message)
     }
 };
 
@@ -43,7 +41,6 @@ async function checkTokenValidity(token) {
         }
     }
 }
-
 module.exports = {
     sendNotification,
     checkTokenValidity
