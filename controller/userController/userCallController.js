@@ -45,9 +45,7 @@ const generateAgoraInfoForUser = async (req, res, next) => {
 
         const channelName = generateUniqueChannelName(staff.user_name, user.user_name);
         const token = generateAgoraInfo(channelName);
-        console.log("fcm Token",staff.fcmToken);
-        
-
+console.log("fcm Token",staff.fcmToken);
         if (staff.fcmToken) {
             const userData = {
                 _id: user._id.toString() || '',
