@@ -3,7 +3,7 @@ const { StatusCodes } = require('http-status-codes');
 const User = require("../../models/userModel");
 const { generateAgoraInfo } = require('../../utils/agoraService');
 const Staff = require("../../models/staffModel");
-const { sendNotification } = require('../../utils/notificationUtils');
+const { sendNotification,checkTokenValidity } = require('../../utils/notificationUtils');
 
 const generateAgoraInfoForUser = async (req, res, next) => {
     try {
@@ -45,7 +45,7 @@ const generateAgoraInfoForUser = async (req, res, next) => {
 
         const channelName = generateUniqueChannelName(staff.user_name, user.user_name);
         const token = generateAgoraInfo(channelName);
-console.log("fcm Token",staff.fcmToken);
+        console.log("fcm Token =========>",staff.fcmToken);
         if (staff.fcmToken) {
             const userData = {
                 _id: user._id.toString() || '',
@@ -65,7 +65,8 @@ console.log("fcm Token",staff.fcmToken);
                 data: userData
             }
 
-            await sendNotification(notification.token, notification.title, notification.body, notification.data)
+            const sendss = await sendNotification(staff.fcmToken, notification.title, notification.body, notification.data)
+            console.log("mesg sends=====>",sendss)
         }
 
         return res.status(StatusCodes.OK).json({
@@ -123,7 +124,9 @@ const callRejectNotification = async (req, res, next) => {
                     data: userData
                 }
 
-                await sendNotification(notification.token, notification.title, notification.body, notification.data)
+                const sendss = await sendNotification(staff.fcmToken, notification.title, notification.body, notification.data)
+                console.log("sendss=====>",sendss)
+
                 return res.status(StatusCodes.OK).json({
                     status: StatusCodes.OK,
                     success: true,
@@ -148,7 +151,9 @@ const callRejectNotification = async (req, res, next) => {
                     data: angelData
                 }
 
-                await sendNotification(notification.token, notification.title, notification.body, notification.data)
+                const sendss = await sendNotification(user.fcmToken, notification.title, notification.body, notification.data)
+                console.log("sendss=====>",sendss)
+                
                 return res.status(StatusCodes.OK).json({
                     status: StatusCodes.OK,
                     success: true,

@@ -9,6 +9,7 @@ const { checkTokenValidity } = require("../utils/notificationUtils");
 
 const logIn = async (req, res, next) => {
     try {
+        console.log("req.body darta ====>",req.body)
         const { name, mobile_number, country_code, fcmToken } = req.body;
         if (!name || !mobile_number) {
             return next(new ErrorHandler("All fields are required for LogIn", StatusCodes.BAD_REQUEST));
@@ -38,7 +39,8 @@ const logIn = async (req, res, next) => {
             staff.call_status = 'Available'
             staff.log_out = 1;
 
-            await staff.save();
+            const response = await staff.save();
+            console.log("store data=======>",response)
 
             const token = generateToken(staff);
             await getAllAngelsSocket();
