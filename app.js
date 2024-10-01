@@ -10,7 +10,14 @@ const errorMiddleware = require("./errors/error");
 dotenv.config({ path: "config/config.env" });
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false, 
+};
+  
+app.use(cors(corsOptions));
 const socketManager = require("./utils/socketManager");
 const server = http.createServer(app);
 
